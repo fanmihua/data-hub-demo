@@ -1,0 +1,204 @@
+/* 方案 B · 看板页、抽屉、问数据弹窗、未找到 */
+
+.vb-board { position: relative; z-index: 1; width: min(var(--vb-max), calc(100% - 48px)); margin: 0 auto; padding: 20px 0 136px; outline: none; }
+.vb-board::before {
+  content: ""; position: absolute; z-index: -1; left: 50%; top: -80px; width: 120vw; height: 520px; transform: translateX(-50%); pointer-events: none;
+  background: radial-gradient(36% 60% at 30% 0%, rgb(var(--accent-rgb) / .08), transparent 70%), radial-gradient(30% 50% at 78% 0%, color-mix(in srgb, var(--vb-au-3) 6%, transparent), transparent 70%);
+}
+.vb-crumbs { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--vb-ink-3); }
+.vb-crumbs a { display: inline-flex; align-items: center; gap: 4px; color: var(--vb-ink-2); text-decoration: none; }
+.vb-crumbs a:hover { color: var(--accent); }
+.vb-crumbs [aria-current] { color: var(--vb-ink-1); }
+.vb-board-title { display: flex; align-items: center; gap: 18px; margin-top: 22px; }
+.vb-board-title .vb-orb-css.is-small { width: 52px; height: 52px; }
+.vb-board-title h1 { font-weight: 300; font-size: clamp(32px, 4vw, 48px); line-height: 1.15; }
+.vb-board-title p { margin-top: 6px !important; color: var(--vb-ink-2); font-size: 15px; }
+.vb-board-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+.vb-board-meta li { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px; border-radius: 999px; background: var(--vb-surface-2); color: var(--vb-ink-2); font-size: 12.5px; }
+
+/* 筛选条：吸顶玻璃 */
+.vb-filters {
+  position: sticky; top: 72px; z-index: 20;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px 20px;
+  margin-top: 28px; padding: 10px 14px; border-radius: 18px;
+  background: color-mix(in srgb, var(--vb-surface) 78%, transparent); border: 1px solid var(--vb-line);
+  box-shadow: var(--vb-shadow); backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
+}
+.vb-filter { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.vb-filter-label { font-size: 12.5px; color: var(--vb-ink-3); white-space: nowrap; }
+.vb-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.vb-fchip { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--vb-line); background: transparent; color: var(--vb-ink-2); font: inherit; font-size: 13px; cursor: pointer; transition: background .2s, border-color .2s, color .2s; }
+.vb-fchip:hover { border-color: var(--vb-line-2); color: var(--vb-ink-1); }
+.vb-fchip[aria-pressed="true"] { background: rgb(var(--accent-rgb) / .1); border-color: rgb(var(--accent-rgb) / .4); color: var(--vb-ink-1); }
+.vb-select {
+  height: 32px; padding: 0 30px 0 12px; border-radius: 999px; border: 1px solid var(--vb-line-2); background-color: var(--vb-surface); color: var(--vb-ink-1);
+  font: inherit; font-size: 13px; cursor: pointer; appearance: none; -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 15px) 14px, calc(100% - 10px) 14px; background-size: 5px 5px; background-repeat: no-repeat;
+}
+.vb-filter-sum { margin-left: auto; font-size: 12.5px; color: var(--vb-ink-3); font-variant-numeric: tabular-nums; }
+
+/* 两栏：本页要点 | 图表与明细 */
+.vb-board-grid { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 28px; margin-top: 28px; align-items: start; }
+.vb-points { position: sticky; top: 148px; }
+.vb-points-in {
+  position: relative; padding: 20px 16px 16px; border-radius: var(--vb-r-lg);
+  background: linear-gradient(180deg, rgb(var(--accent-rgb) / .06), transparent 60%), var(--vb-surface);
+  border: 1px solid var(--vb-line); box-shadow: var(--vb-shadow);
+}
+.vb-points h2 { display: flex; align-items: center; gap: 8px; padding: 0 6px; font-size: 16px !important; font-weight: 500 !important; }
+.vb-points h2 svg { color: var(--accent); }
+.vb-points-note { padding: 4px 6px 0; font-size: 12.5px; color: var(--vb-ink-3); }
+.vb-points ol { display: grid; gap: 4px; margin: 14px 0 0; padding: 0; list-style: none; }
+.vb-points ol button {
+  position: relative; display: grid; grid-template-columns: auto 1fr; gap: 10px; width: 100%; padding: 11px 10px; border-radius: 14px; border: 1px solid transparent;
+  background: transparent; text-align: left; font: inherit; font-size: 14px; line-height: 1.55; color: var(--vb-ink-1); cursor: pointer;
+  transition: background .2s, border-color .2s, transform .25s var(--vb-spring);
+}
+.vb-points ol button:hover { background: var(--vb-surface-2); transform: translateX(2px); }
+.vb-points ol button.is-on { background: rgb(var(--accent-rgb) / .08); border-color: rgb(var(--accent-rgb) / .3); }
+.vb-points ol strong { font-weight: 500; color: var(--accent); }
+:root[data-variant="b"][data-theme="dark"] .vb-points ol strong { color: color-mix(in srgb, var(--accent) 80%, #fff); }
+.vb-points-n { font-family: var(--vb-mono); font-size: 11px; color: var(--vb-ink-3); padding-top: 3px; }
+.vb-points ol li { animation: vb-rise .6s var(--vb-spring) both; animation-delay: calc(var(--i, 0) * 60ms); }
+
+.vb-board-main { display: grid; gap: var(--vb-gap); min-width: 0; }
+.vb-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--vb-gap); margin: 0; padding: 0; list-style: none; }
+.vb-tile { display: grid; gap: 6px; padding: 18px 20px; border-radius: var(--vb-r); background: var(--vb-surface); border: 1px solid var(--vb-line); box-shadow: var(--vb-shadow-sm); min-width: 0; }
+.vb-tile .vb-metric-value { font-size: clamp(24px, 2.2vw, 30px); }
+.vb-board-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--vb-gap); }
+.vb-chart-card.is-main { padding-bottom: 18px; }
+
+/* 付款状态条 */
+.vb-statusbars { display: grid; gap: 10px; margin: 6px 0 0; padding: 0; list-style: none; }
+.vb-statusbars li { display: grid; grid-template-columns: 96px 1fr auto; align-items: center; gap: 12px; padding: 8px 6px; border-radius: 12px; transition: opacity .2s, background .2s; }
+.vb-statusbars li:hover { background: var(--vb-surface-2); }
+.vb-statusbars li.is-dim { opacity: .45; }
+.vb-statusbars-track { height: 12px; border-radius: 0 4px 4px 0; background: var(--vb-track); overflow: hidden; }
+.vb-statusbars-track i { display: block; height: 100%; border-radius: 0 4px 4px 0; background: currentColor; }
+.vb-statusbars li.is-ok .vb-statusbars-track { color: var(--vb-ok); }
+.vb-statusbars li.is-part .vb-statusbars-track { color: var(--vb-warn); }
+.vb-statusbars li.is-none .vb-statusbars-track { color: var(--vb-bad); }
+.vb-statusbars-val { display: grid; justify-items: end; font-size: 13px; line-height: 1.3; }
+.vb-statusbars-val b { font-weight: 500; }
+.vb-statusbars-val small { margin: 0; font-size: 11.5px; }
+.vb-status-badge { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px 0 7px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.vb-status-badge.is-ok { background: var(--vb-ok-bg); color: var(--vb-ok); }
+.vb-status-badge.is-part { background: var(--vb-warn-bg); color: var(--vb-warn); }
+.vb-status-badge.is-none { background: var(--vb-bad-bg); color: var(--vb-bad); }
+
+/* 明细表 */
+.vb-table-wrap { overflow-x: auto; margin: 0 calc(var(--vb-pad) * -1) calc(var(--vb-pad) * -1); border-top: 1px solid var(--vb-line); }
+.vb-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.vb-table th, .vb-table td { padding: 12px 14px; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--vb-line); }
+.vb-table th:first-child, .vb-table td:first-child { padding-left: var(--vb-pad); }
+.vb-table th:last-child, .vb-table td:last-child { padding-right: var(--vb-pad); }
+.vb-table tbody tr:last-child th, .vb-table tbody tr:last-child td { border-bottom: 0; }
+.vb-table thead th { position: sticky; top: 0; font-weight: 500; font-size: 12.5px; color: var(--vb-ink-2); background: var(--vb-surface-2); }
+.vb-table .is-num { text-align: right; font-variant-numeric: tabular-nums; }
+.vb-table tbody tr { cursor: pointer; transition: background .15s; }
+.vb-table tbody tr:hover { background: rgb(var(--accent-rgb) / .045); }
+.vb-table tbody th { font-weight: 400; }
+.vb-row-btn { padding: 0; border: 0; background: none; font: inherit; font-family: var(--vb-mono); font-size: 12.5px; color: var(--accent); cursor: pointer; }
+.vb-row-btn:hover { text-decoration: underline; text-underline-offset: 3px; }
+.vb-td-sum { max-width: 220px; overflow: hidden; text-overflow: ellipsis; color: var(--vb-ink-2); }
+.vb-model { display: inline-flex; align-items: center; gap: 6px; }
+
+/* 抽屉：付款链路 */
+.vb-drawer-layer, .vb-dialog-layer { position: fixed; inset: 0; z-index: 950; }
+.vb-drawer-scrim { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; background: rgba(10, 10, 24, .28); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); cursor: default; animation: vb-fade .3s both; }
+:root[data-variant="b"][data-theme="dark"] .vb-drawer-scrim { background: rgba(0, 0, 0, .55); }
+.vb-drawer {
+  position: absolute; top: 10px; right: 10px; bottom: 10px; width: min(460px, calc(100vw - 20px));
+  display: flex; flex-direction: column; border-radius: 24px; overflow: hidden;
+  background: var(--vb-surface); border: 1px solid var(--vb-line-2); box-shadow: var(--vb-shadow-lg);
+  font-family: var(--vb-font); color: var(--vb-ink-1);
+  animation: vb-drawer-in .5s var(--vb-spring) both;
+}
+@keyframes vb-drawer-in { from { transform: translateX(40px); opacity: 0; } }
+.vb-drawer-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 22px 22px 14px; border-bottom: 1px solid var(--vb-line); }
+.vb-drawer-head h2 { margin-top: 4px; font-family: var(--vb-mono); font-size: 20px; font-weight: 500; }
+.vb-drawer-body { flex: 1; overflow-y: auto; padding: 18px 22px 28px; }
+.vb-chain-progress { display: grid; gap: 8px; padding: 14px 16px; border-radius: 16px; background: var(--vb-surface-2); }
+.vb-chain-progress > div { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--vb-ink-2); }
+.vb-chain-progress b { font-weight: 500; color: var(--vb-ink-1); font-variant-numeric: tabular-nums; }
+.vb-chain { position: relative; display: grid; gap: 14px; margin: 22px 0 0; padding: 0; list-style: none; }
+.vb-chain::before {
+  content: ""; position: absolute; left: 17px; top: 18px; bottom: 18px; width: 2px; border-radius: 2px;
+  background: linear-gradient(180deg, var(--vb-node), var(--accent) 35%, var(--vb-ok) 75%, var(--vb-warn));
+  transform-origin: 50% 0; animation: vb-chain-line 1.1s .1s var(--vb-ease) both;
+}
+@keyframes vb-chain-line { from { transform: scaleY(0); } }
+.vb-chain-step { position: relative; display: grid; grid-template-columns: 36px 1fr; gap: 14px; animation: vb-rise .6s var(--vb-spring) both; animation-delay: calc(120ms + var(--i, 0) * 140ms); }
+.vb-chain-node { position: relative; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; font-size: 13px; font-weight: 500; background: var(--vb-surface); border: 2px solid var(--vb-node); color: var(--vb-ink-2); }
+.vb-chain-node.is-accent { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 4px rgb(var(--accent-rgb) / .1); }
+.vb-chain-node.is-ok { border-color: var(--vb-ok); color: var(--vb-ok); }
+.vb-chain-node.is-wait { border-style: dashed; border-color: var(--vb-warn); color: var(--vb-warn); }
+.vb-chain-card { display: grid; gap: 4px; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--vb-line); background: var(--vb-surface); min-width: 0; }
+.vb-chain-card.is-pay { padding: 12px 16px; }
+.vb-chain-k { font-size: 12px; color: var(--vb-ink-3); }
+.vb-chain-card strong { font-size: 16px; font-weight: 500; }
+.vb-chain-meta { font-size: 12.5px; color: var(--vb-ink-2); overflow-wrap: anywhere; }
+.vb-chain-dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; margin: 10px 0 0; padding-top: 10px; border-top: 1px dashed var(--vb-line-2); }
+.vb-chain-dl dt { font-size: 11.5px; color: var(--vb-ink-3); }
+.vb-chain-dl dd { margin: 2px 0 0; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.vb-chain-step.is-pending .vb-chain-card { border-style: dashed; }
+.vb-drawer-note { margin-top: 22px !important; font-size: 12px; color: var(--vb-ink-3); }
+
+/* 问数据弹窗 */
+.vb-dialog-layer { display: grid; place-items: start center; padding: 10vh 16px 16px; overflow-y: auto; }
+.vb-dialog {
+  position: relative; width: min(720px, 100%); padding: 18px 22px 22px; border-radius: 26px;
+  background: var(--vb-surface); border: 1px solid var(--vb-line-2); box-shadow: var(--vb-shadow-lg);
+  font-family: var(--vb-font); font-size: 15px; color: var(--vb-ink-1);
+  animation: vb-card-in .45s var(--vb-spring) both;
+}
+.vb-dialog-head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.vb-dialog-head h2 { flex: 1; font-size: 18px; font-weight: 500; }
+.vb-dialog-head .vb-orb-css.is-small { width: 30px; height: 30px; }
+.vb-dialog .vb-ask { margin-top: 12px; }
+.vb-dialog .vb-suggest { justify-content: flex-start; }
+.vb-dialog .vb-ask-hint { text-align: left; }
+
+/* 未找到 */
+.vb-404 { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 14px; width: min(640px, calc(100% - 32px)); margin: 0 auto; padding: 72px 0 136px; text-align: center; outline: none; }
+.vb-404 > .vb-orb-css { width: 120px; height: 120px; margin-bottom: 18px; filter: saturate(.6); opacity: .85; }
+.vb-404 h1 { font-weight: 300; font-size: clamp(32px, 5vw, 48px); }
+.vb-404 p { color: var(--vb-ink-2); }
+.vb-404-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 20px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 14px; }
+
+:root[data-variant="b"][data-fx="off"] .vb-chain::before,
+:root[data-variant="b"][data-fx="off"] .vb-chain-step,
+:root[data-variant="b"][data-fx="off"] .vb-drawer,
+:root[data-variant="b"][data-fx="off"] .vb-dialog,
+:root[data-variant="b"][data-fx="off"] .vb-drawer-scrim,
+:root[data-variant="b"][data-fx="off"] .vb-points ol li { animation: none; }
+
+@media (max-width: 1080px) {
+  .vb-board-grid { grid-template-columns: 1fr; }
+  .vb-points { position: static; }
+  .vb-points ol { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+}
+@media (max-width: 860px) {
+  .vb-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vb-board-pair { grid-template-columns: 1fr; }
+  .vb-filters { top: 68px; }
+}
+@media (max-width: 520px) {
+  .vb-board { width: calc(100% - 32px); }
+  .vb-board-title { gap: 12px; }
+  .vb-board-title .vb-orb-css.is-small { width: 40px; height: 40px; }
+  .vb-board-meta li:nth-child(2), .vb-board-meta li:nth-child(3) { display: none; }
+  .vb-filters { position: static; gap: 10px; padding: 12px; }
+  .vb-filter { width: 100%; }
+  .vb-filter .vb-select { flex: 1; }
+  .vb-filter-sum { margin-left: 0; }
+  .vb-tile { padding: 14px 16px; }
+  .vb-points ol { grid-template-columns: 1fr; }
+  .vb-hbars li { grid-template-columns: minmax(64px, 34%) 1fr auto; gap: 10px; padding: 8px 4px; }
+  .vb-statusbars li { grid-template-columns: 90px 1fr auto; }
+  .vb-drawer { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 86dvh; animation-name: vb-sheet-in; }
+  .vb-dialog-layer { padding-top: 12px; }
+  .vb-dialog { padding: 16px; }
+}
+@keyframes vb-sheet-in { from { transform: translateY(40px); opacity: 0; } }

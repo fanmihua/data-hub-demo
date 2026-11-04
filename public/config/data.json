@@ -1,0 +1,527 @@
+{
+  "meta": {
+    "title": "Data Hub",
+    "org": "演示研究院",
+    "asOf": "2026-11-04T09:00:00+08:00",
+    "fiscalYear": 2026,
+    "currency": "CNY",
+    "note": "全部为虚构演示数据，金额单位为人民币元。"
+  },
+  "domains": [
+    {
+      "id": "finance",
+      "name": "财务",
+      "english": "FINANCE",
+      "desc": "预算、合同、成本与资金",
+      "categories": [
+        "合同管理",
+        "成本支出"
+      ],
+      "status": "ready"
+    },
+    {
+      "id": "business",
+      "name": "经营",
+      "english": "BUSINESS",
+      "desc": "经营目标、收入与回款",
+      "categories": [
+        "经营分析"
+      ],
+      "status": "ready"
+    },
+    {
+      "id": "research",
+      "name": "科研生产",
+      "english": "RESEARCH",
+      "desc": "型号项目、研制与交付",
+      "categories": [
+        "型号项目",
+        "试验与交付"
+      ],
+      "status": "planned"
+    },
+    {
+      "id": "quality",
+      "name": "质量",
+      "english": "QUALITY",
+      "desc": "质量问题、检验与资质",
+      "categories": [
+        "质量管理"
+      ],
+      "status": "planned"
+    },
+    {
+      "id": "people",
+      "name": "人力",
+      "english": "PEOPLE",
+      "desc": "组织人员、工时与培训",
+      "categories": [
+        "组织与人员"
+      ],
+      "status": "planned"
+    },
+    {
+      "id": "assets",
+      "name": "物资资产",
+      "english": "ASSETS",
+      "desc": "采购、库存、设备与实验室",
+      "categories": [
+        "采购与库存"
+      ],
+      "status": "planned"
+    }
+  ],
+  "assets": [
+    {
+      "id": "contracts",
+      "domain": "finance",
+      "category": "合同管理",
+      "name": "合同与付款",
+      "desc": "从型号支出到合同履约，查看每一笔报账与付款的关联。",
+      "owner": "财务处",
+      "source": "财务 ERP / 报账系统",
+      "tags": [
+        "合同",
+        "报账",
+        "付款",
+        "型号"
+      ],
+      "updated": "2026-11-04 09:00",
+      "code": "FIN.CTR.01"
+    },
+    {
+      "id": "expenses",
+      "domain": "finance",
+      "category": "成本支出",
+      "name": "报账与支出",
+      "desc": "按部门和型号查看支出构成，追溯报账、凭证与往来单位。",
+      "owner": "财务处",
+      "source": "报账系统",
+      "tags": [
+        "成本",
+        "支出",
+        "报销",
+        "凭证"
+      ],
+      "updated": "2026-11-04 09:00",
+      "code": "FIN.CST.01"
+    },
+    {
+      "id": "operations",
+      "domain": "business",
+      "category": "经营分析",
+      "name": "经营概览",
+      "desc": "跟踪各型号的收入目标、实际收入与回款，了解经营进展。",
+      "owner": "经营管理部",
+      "source": "经营管理系统",
+      "tags": [
+        "经营",
+        "收入",
+        "回款",
+        "目标"
+      ],
+      "updated": "2026-11-04 09:00",
+      "code": "BIZ.PLN.01"
+    }
+  ],
+  "models": [
+    {
+      "id": "HX-01",
+      "dept": "研发一部",
+      "target": 24000000,
+      "revenue": 18600000,
+      "received": 15200000,
+      "monthlyRevenue": [
+        {
+          "month": "2026-06",
+          "amount": 2600000
+        },
+        {
+          "month": "2026-07",
+          "amount": 2800000
+        },
+        {
+          "month": "2026-08",
+          "amount": 3100000
+        },
+        {
+          "month": "2026-09",
+          "amount": 3400000
+        },
+        {
+          "month": "2026-10",
+          "amount": 4200000
+        },
+        {
+          "month": "2026-11",
+          "amount": 2500000
+        }
+      ]
+    },
+    {
+      "id": "HX-02",
+      "dept": "研发二部",
+      "target": 18000000,
+      "revenue": 14400000,
+      "received": 11800000,
+      "monthlyRevenue": [
+        {
+          "month": "2026-06",
+          "amount": 1600000
+        },
+        {
+          "month": "2026-07",
+          "amount": 2200000
+        },
+        {
+          "month": "2026-08",
+          "amount": 2600000
+        },
+        {
+          "month": "2026-09",
+          "amount": 2700000
+        },
+        {
+          "month": "2026-10",
+          "amount": 3100000
+        },
+        {
+          "month": "2026-11",
+          "amount": 2200000
+        }
+      ]
+    },
+    {
+      "id": "HX-03",
+      "dept": "试验中心",
+      "target": 8000000,
+      "revenue": 5600000,
+      "received": 4200000,
+      "monthlyRevenue": [
+        {
+          "month": "2026-06",
+          "amount": 600000
+        },
+        {
+          "month": "2026-07",
+          "amount": 700000
+        },
+        {
+          "month": "2026-08",
+          "amount": 900000
+        },
+        {
+          "month": "2026-09",
+          "amount": 1000000
+        },
+        {
+          "month": "2026-10",
+          "amount": 1500000
+        },
+        {
+          "month": "2026-11",
+          "amount": 900000
+        }
+      ]
+    }
+  ],
+  "contracts": [
+    {
+      "id": "HT-2026-001",
+      "name": "动力组件采购合同",
+      "unit": "远行精密设备有限公司",
+      "amount": 4800000,
+      "signed": "2026-06-12"
+    },
+    {
+      "id": "HT-2026-002",
+      "name": "控制模块研制合同",
+      "unit": "明川电子技术有限公司",
+      "amount": 3200000,
+      "signed": "2026-07-03"
+    },
+    {
+      "id": "HT-2026-003",
+      "name": "光学载荷采购合同",
+      "unit": "澄光仪器有限公司",
+      "amount": 2400000,
+      "signed": "2026-07-18"
+    },
+    {
+      "id": "HT-2026-004",
+      "name": "地面测试服务合同",
+      "unit": "启航测试技术有限公司",
+      "amount": 1600000,
+      "signed": "2026-08-06"
+    }
+  ],
+  "bills": [
+    {
+      "id": "BZD-2026-001",
+      "date": "2026-07-15",
+      "model": "HX-01",
+      "system": "动力分系统",
+      "component": "推进组件",
+      "dept": "研发一部",
+      "scope": "院外集团内",
+      "contractId": "HT-2026-001",
+      "unit": "远行精密设备有限公司",
+      "summary": "首批动力组件采购",
+      "subject": "设备采购",
+      "voucher": "记-2026-001",
+      "amount": 1600000,
+      "payments": [
+        {
+          "id": "FK-001-1",
+          "date": "2026-07-17",
+          "amount": 600000,
+          "account": "基本账户 · 尾号 2086"
+        },
+        {
+          "id": "FK-001-2",
+          "date": "2026-07-20",
+          "amount": 400000,
+          "account": "基本账户 · 尾号 2086"
+        }
+      ]
+    },
+    {
+      "id": "BZD-2026-002",
+      "date": "2026-08-21",
+      "model": "HX-01",
+      "system": "动力分系统",
+      "component": "执行组件",
+      "dept": "研发一部",
+      "scope": "院外集团内",
+      "contractId": "HT-2026-001",
+      "unit": "远行精密设备有限公司",
+      "summary": "执行组件阶段验收",
+      "subject": "设备采购",
+      "voucher": "记-2026-002",
+      "amount": 1200000,
+      "payments": [
+        {
+          "id": "FK-002-1",
+          "date": "2026-08-23",
+          "amount": 1200000,
+          "account": "基本账户 · 尾号 2086"
+        }
+      ]
+    },
+    {
+      "id": "BZD-2026-003",
+      "date": "2026-10-08",
+      "model": "HX-01",
+      "system": "动力分系统",
+      "component": "推进组件",
+      "dept": "研发一部",
+      "scope": "院外集团内",
+      "contractId": "HT-2026-001",
+      "unit": "远行精密设备有限公司",
+      "summary": "第二批动力组件采购",
+      "subject": "设备采购",
+      "voucher": "记-2026-003",
+      "amount": 800000,
+      "payments": [
+        {
+          "id": "FK-003-1",
+          "date": "2026-10-10",
+          "amount": 300000,
+          "account": "基本账户 · 尾号 2086"
+        }
+      ]
+    },
+    {
+      "id": "BZD-2026-004",
+      "date": "2026-08-12",
+      "model": "HX-01",
+      "system": "控制分系统",
+      "component": "控制模块",
+      "dept": "研发一部",
+      "scope": "集团外",
+      "contractId": "HT-2026-002",
+      "unit": "明川电子技术有限公司",
+      "summary": "控制模块研制首期",
+      "subject": "设备采购",
+      "voucher": "记-2026-004",
+      "amount": 900000,
+      "payments": [
+        {
+          "id": "FK-004-1",
+          "date": "2026-08-14",
+          "amount": 500000,
+          "account": "基本账户 · 尾号 2086"
+        }
+      ]
+    },
+    {
+      "id": "BZD-2026-005",
+      "date": "2026-10-16",
+      "model": "HX-01",
+      "system": "控制分系统",
+      "component": "控制模块",
+      "dept": "研发一部",
+      "scope": "集团外",
+      "contractId": "HT-2026-002",
+      "unit": "明川电子技术有限公司",
+      "summary": "控制模块联调验收",
+      "subject": "设备采购",
+      "voucher": "记-2026-005",
+      "amount": 700000,
+      "payments": []
+    },
+    {
+      "id": "BZD-2026-006",
+      "date": "2026-09-10",
+      "model": "HX-02",
+      "system": "载荷分系统",
+      "component": "光学组件",
+      "dept": "研发二部",
+      "scope": "集团外",
+      "contractId": "HT-2026-003",
+      "unit": "澄光仪器有限公司",
+      "summary": "光学组件采购首期",
+      "subject": "设备采购",
+      "voucher": "记-2026-006",
+      "amount": 800000,
+      "payments": [
+        {
+          "id": "FK-006-1",
+          "date": "2026-09-12",
+          "amount": 800000,
+          "account": "基本账户 · 尾号 2086"
+        }
+      ]
+    },
+    {
+      "id": "BZD-2026-007",
+      "date": "2026-10-22",
+      "model": "HX-02",
+      "system": "载荷分系统",
+      "component": "成像模块",
+      "dept": "研发二部",
+      "scope": "集团外",
+      "contractId": "HT-2026-003",
+      "unit": "澄光仪器有限公司",
+      "summary": "成像模块阶段交付",
+      "subject": "设备采购",
+      "voucher": "记-2026-007",
+      "amount": 600000,
+      "payments": [
+        {
+          "id": "FK-007-1",
+          "date": "2026-10-24",
+          "amount": 200000,
+          "account": "基本账户 · 尾号 2086"
+        },
+        {
+          "id": "FK-007-2",
+          "date": "2026-10-27",
+          "amount": 100000,
+          "account": "基本账户 · 尾号 2086"
+        }
+      ]
+    },
+    {
+      "id": "BZD-2026-008",
+      "date": "2026-11-02",
+      "model": "HX-02",
+      "system": "载荷分系统",
+      "component": "光学组件",
+      "dept": "研发二部",
+      "scope": "集团外",
+      "contractId": "HT-2026-003",
+      "unit": "澄光仪器有限公司",
+      "summary": "光学组件尾批验收",
+      "subject": "设备采购",
+      "voucher": "记-2026-008",
+      "amount": 400000,
+      "payments": []
+    },
+    {
+      "id": "BZD-2026-009",
+      "date": "2026-09-18",
+      "model": "HX-03",
+      "system": "地面分系统",
+      "component": "测试平台",
+      "dept": "试验中心",
+      "scope": "院外集团内",
+      "contractId": "HT-2026-004",
+      "unit": "启航测试技术有限公司",
+      "summary": "地面测试服务首期",
+      "subject": "试验服务费",
+      "voucher": "记-2026-009",
+      "amount": 500000,
+      "payments": [
+        {
+          "id": "FK-009-1",
+          "date": "2026-09-20",
+          "amount": 300000,
+          "account": "基本账户 · 尾号 2086"
+        }
+      ]
+    },
+    {
+      "id": "BZD-2026-010",
+      "date": "2026-10-28",
+      "model": "HX-03",
+      "system": "地面分系统",
+      "component": "测试平台",
+      "dept": "试验中心",
+      "scope": "院外集团内",
+      "contractId": "HT-2026-004",
+      "unit": "启航测试技术有限公司",
+      "summary": "环境试验服务",
+      "subject": "试验服务费",
+      "voucher": "记-2026-010",
+      "amount": 450000,
+      "payments": [
+        {
+          "id": "FK-010-1",
+          "date": "2026-10-28",
+          "amount": 450000,
+          "account": "基本账户 · 尾号 2086"
+        }
+      ]
+    },
+    {
+      "id": "BZD-2026-011",
+      "date": "2026-11-03",
+      "model": "HX-03",
+      "system": "地面分系统",
+      "component": "采集模块",
+      "dept": "试验中心",
+      "scope": "院内",
+      "contractId": null,
+      "unit": "内部保障中心",
+      "summary": "测试耗材领用",
+      "subject": "材料费",
+      "voucher": "记-2026-011",
+      "amount": 60000,
+      "payments": []
+    },
+    {
+      "id": "BZD-2026-012",
+      "date": "2026-10-12",
+      "model": "HX-02",
+      "system": "载荷分系统",
+      "component": "成像模块",
+      "dept": "研发二部",
+      "scope": "院内",
+      "contractId": null,
+      "unit": "内部保障中心",
+      "summary": "试验工装加工",
+      "subject": "材料费",
+      "voucher": "记-2026-012",
+      "amount": 30000,
+      "payments": [
+        {
+          "id": "FK-012-1",
+          "date": "2026-10-14",
+          "amount": 30000,
+          "account": "基本账户 · 尾号 2086"
+        }
+      ]
+    }
+  ]
+}

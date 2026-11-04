@@ -1,0 +1,143 @@
+/* 方案 A · 图表：发丝网格、2px 线、≤24px 柱、十字线、提示框、描线入场 */
+
+.va-chart { position: relative; width: 100%; min-width: 0; }
+.va-chart svg { display: block; overflow: visible; }
+.va-svg text { font-size: 11.5px; fill: var(--va-ink-3); }
+.va-gridline { stroke: var(--va-grid-major); stroke-width: 1; shape-rendering: crispEdges; }
+.va-axis { stroke: var(--va-line-strong); stroke-width: 1; shape-rendering: crispEdges; }
+.va-svg .va-tick { font-family: var(--va-mono); font-size: 10.5px; fill: var(--va-ink-3); font-variant-numeric: tabular-nums; }
+.va-svg .va-tick.is-on { fill: var(--va-ink-1); }
+.va-svg .va-tick-unit { font-family: var(--va-font); font-size: 11px; }
+.va-svg .va-mono-svg { font-family: var(--va-mono); font-size: 10px; letter-spacing: .08em; fill: var(--va-ink-3); }
+
+/* 线：淡色底线常驻（静止状态），实线首次进入视口时描出 */
+.va-line { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.va-line-ghost { fill: none; stroke-width: 2; stroke-linecap: round; opacity: .22; }
+.va-draw { stroke-dasharray: 1 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.5s var(--va-ease); }
+.va-svg.is-played .va-draw { stroke-dashoffset: 0; }
+.va-area { opacity: calc(var(--va-area-alpha) * .45); transition: opacity 1.2s ease .2s; }
+.va-svg.is-played .va-area { opacity: var(--va-area-alpha); }
+.va-area-soft { opacity: .04; }
+.va-svg.is-played .va-area-soft { opacity: calc(var(--va-area-alpha) * .45); }
+.va-spark .va-area { opacity: 1; }
+
+.va-ref line { stroke: var(--va-ink-2); stroke-width: 1; stroke-dasharray: 5 4; }
+.va-svg .va-ref text { font-size: 11.5px; fill: var(--va-ink-2); }
+.va-endlabel circle { fill: var(--va-surface); stroke: var(--va-ink-1); stroke-width: 1.5; }
+.va-svg .va-endlabel text { font-size: 12px; font-weight: 500; fill: var(--va-ink-1); paint-order: stroke; stroke: var(--va-surface); stroke-width: 4px; stroke-linejoin: round; }
+.va-cross-hair line { stroke: rgb(var(--va-ink-rgb) / .38); stroke-width: 1; stroke-dasharray: 3 3; }
+.va-cross-hair circle { stroke: var(--va-surface); stroke-width: 2; }
+.va-hit { cursor: crosshair; }
+
+/* 提示框 */
+.va-tip {
+  position: absolute; z-index: 20; pointer-events: none; min-width: 168px; max-width: 260px;
+  padding: 10px 12px; border-radius: 9px; background: var(--va-tip-bg); border: 1px solid var(--va-line-strong);
+  box-shadow: var(--va-shadow-pop); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  font-size: 12.5px; color: var(--va-ink-1);
+}
+.va-tip-title { font-size: 12px; color: var(--va-ink-2); margin-bottom: 6px; font-family: var(--va-mono); letter-spacing: .04em; }
+.va-tip-row { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; align-items: center; gap: 8px; line-height: 1.7; }
+.va-tip-row i { width: 8px; height: 8px; border-radius: 2px; }
+.va-tip-row i.is-empty { background: transparent; }
+.va-tip-row span { color: var(--va-ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.va-tip-row b { font-weight: 500; }
+.va-tip-row.is-strong { margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--va-line); }
+.va-tip-row.is-strong span { color: var(--va-ink-1); }
+.va-tip-note { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--va-line-strong); color: var(--va-ink-2); }
+
+/* 图例 */
+.va-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: -2px 0 12px; font-size: 12.5px; color: var(--va-ink-2); }
+.va-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.va-key { display: inline-block; flex: none; }
+.va-key-box { width: 10px; height: 10px; border-radius: 3px; background: var(--k); }
+.va-key-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--k); }
+.va-key-line { width: 16px; height: 2px; border-radius: 2px; background: var(--k); }
+.va-key-dash { width: 18px; height: 0; border-top: 1.5px dashed var(--k); }
+
+/* 卡片 */
+.va-chartcard { display: flex; flex-direction: column; }
+.va-card-title { min-width: 0; }
+.va-card-tools { display: flex; align-items: center; gap: 8px; }
+.va-card-body { flex: 1; min-width: 0; }
+
+/* 柱 */
+.va-bar { transform-box: fill-box; transition: opacity .9s ease, transform 1s var(--va-ease); opacity: .45; }
+.va-bar-h { transform-origin: 0 50%; transform: scaleX(.55); }
+.va-bar-v { transform-origin: 50% 100%; transform: scaleY(.55); }
+.va-svg.is-played .va-bar { opacity: 1; transform: none; }
+.va-svg.is-played .va-bar.is-dim { opacity: .35; }
+.va-bar-track { fill: rgb(var(--va-ink-rgb) / .045); }
+.va-svg .va-bar-label { font-size: 13px; fill: var(--va-ink-1); }
+.va-svg .va-bar-sub { font-size: 11.5px; fill: var(--va-ink-3); }
+.va-svg .va-bar-value { font-size: 12.5px; fill: var(--va-ink-1); font-weight: 500; font-variant-numeric: tabular-nums; }
+.va-hbar-row { transition: opacity .2s; }
+.va-hbar-row.is-dim { opacity: .45; }
+
+/* 环 */
+.va-ring { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.va-ring-fig { position: relative; flex: none; }
+.va-ring-fig svg { display: block; overflow: visible; }
+.va-ring-seg { transition: opacity .25s; opacity: .5; }
+.va-svg.is-played .va-ring-seg { opacity: 1; }
+.va-svg.is-played .va-ring-seg.is-dim { opacity: .3; }
+.va-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; padding: 34px; }
+.va-ring-center .va-mono { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: .02em; text-transform: none; }
+.va-ring-center b { font-size: 26px; line-height: 1.2; }
+.va-ring-center b small { font-size: 12px; color: var(--va-ink-3); margin-left: 2px; font-weight: 400; }
+.va-ring-share { font-size: 12px; color: var(--va-ink-2); }
+.va-ring-list { flex: 1; min-width: 180px; display: grid; gap: 2px; }
+.va-ring-list li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto 52px; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 7px; font-size: 13px; transition: background-color .2s; }
+.va-ring-list li.is-on { background: var(--va-surface-2); }
+.va-ring-list i { width: 10px; height: 10px; border-radius: 3px; }
+.va-ring-list span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.va-ring-list b { font-weight: 500; }
+.va-ring-list em { font-style: normal; text-align: right; color: var(--va-ink-3); }
+
+/* 仪表 */
+.va-gauge { position: relative; flex: none; }
+.va-gauge-svg { display: block; overflow: visible; }
+.va-gauge-track { fill: none; stroke: rgb(var(--va-ink-rgb) / .08); stroke-width: 10; stroke-linecap: round; }
+.va-gauge-val { fill: none; stroke-width: 10; stroke-linecap: butt; transition: stroke-dashoffset 1.4s var(--va-ease); }
+.va-gauge-tick { stroke: rgb(var(--va-ink-rgb) / .22); stroke-width: 1; transition: stroke .3s; }
+.va-gauge-tick.is-major { stroke: rgb(var(--va-ink-rgb) / .45); }
+.va-gauge-needle { transition: transform 1.4s var(--va-ease); }
+.va-gauge-end { stroke: var(--va-surface); stroke-width: 2.5; }
+.va-gauge-pin { stroke-width: 1.5; }
+.va-gauge-center { position: absolute; left: 0; right: 0; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; }
+.va-gauge-num { display: inline-flex; align-items: baseline; font-size: 38px; line-height: 1; font-weight: 500; color: var(--va-ink-1); }
+.va-gauge-num small { font-size: 15px; margin-left: 2px; color: var(--va-ink-3); font-weight: 400; }
+.va-gauge-solo { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.va-gauge-note { font-size: 13px; color: var(--va-ink-2); text-align: center; }
+
+/* 资金流向 */
+.va-flow-band { fill: none; opacity: .1; transition: opacity 1s ease; stroke-linecap: butt; }
+.va-svg.is-played .va-flow-band { opacity: .2; }
+:root[data-variant="a"][data-theme="dark"] .va-svg.is-played .va-flow-band { opacity: .26; }
+.va-flow-trace { fill: none; stroke-width: 1; opacity: .7; transition: stroke-dashoffset 1.1s var(--va-ease); }
+.va-flow-light {
+  fill: none; stroke-linecap: round; stroke-dasharray: 10 54; opacity: .9;
+  animation: va-flow var(--va-flow-dur) linear infinite;
+}
+@keyframes va-flow { from { stroke-dashoffset: 64; } to { stroke-dashoffset: 0; } }
+.va-flow-link { transition: opacity .2s; }
+.va-flow-link.is-on .va-flow-band { opacity: .42 !important; }
+.va-flow-link.is-dim { opacity: .35; }
+.va-flow-node { cursor: default; transition: opacity .2s; }
+.va-flow-node.is-dim { opacity: .45; }
+.va-svg .va-flow-label { font-size: 12.5px; fill: var(--va-ink-1); paint-order: stroke; stroke: var(--va-surface); stroke-width: 4px; stroke-linejoin: round; }
+.va-svg .va-flow-value { font-family: var(--va-mono); font-size: 10.5px; fill: var(--va-ink-2); paint-order: stroke; stroke: var(--va-surface); stroke-width: 4px; stroke-linejoin: round; font-variant-numeric: tabular-nums; }
+.va-flow .va-flow-band { cursor: crosshair; pointer-events: stroke; }
+
+/* 数据表 */
+.va-dtable-wrap { width: 100%; overflow-x: auto; }
+.va-dtable { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.va-dtable th { text-align: left; font-weight: 400; font-size: 12px; color: var(--va-ink-3); padding: 8px 10px; border-bottom: 1px solid var(--va-line-strong); white-space: nowrap; }
+.va-dtable td { padding: 9px 10px; border-bottom: 1px solid var(--va-line); color: var(--va-ink-1); }
+.va-dtable .is-num { text-align: right; }
+.va-dtable tbody tr:hover td { background: var(--va-surface-2); }
+.va-inline-meter { display: inline-flex; align-items: center; gap: 8px; }
+.va-inline-meter i { display: inline-block; width: 56px; height: 4px; border-radius: 2px; background: rgb(var(--va-ink-rgb) / .08); overflow: hidden; }
+.va-inline-meter b { display: block; height: 100%; transform-origin: 0 50%; }
+
+.va-empty { padding: 32px 0; text-align: center; color: var(--va-ink-2); font-size: 14px; }

@@ -1,0 +1,285 @@
+/* 方案 B · 首页 */
+
+.vb-home { position: relative; z-index: 1; padding-bottom: 136px; outline: none; }
+
+/* ───────── 首屏 ───────── */
+
+.vb-hero {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  width: min(1000px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 0;
+}
+.vb-hero-aurora {
+  position: absolute; z-index: -1; left: 50%; top: -120px; width: min(1400px, 160vw); height: 900px; transform: translateX(-50%); pointer-events: none;
+  background:
+    radial-gradient(40% 32% at 50% 30%, rgb(var(--accent-rgb) / .1), transparent 70%),
+    radial-gradient(28% 26% at 28% 40%, color-mix(in srgb, var(--vb-au-2) 7%, transparent), transparent 70%),
+    radial-gradient(26% 24% at 74% 42%, color-mix(in srgb, var(--vb-au-3) 7%, transparent), transparent 70%);
+  -webkit-mask: radial-gradient(60% 60% at 50% 40%, #000, transparent);
+  mask: radial-gradient(60% 60% at 50% 40%, #000, transparent);
+}
+:root[data-variant="b"][data-theme="dark"] .vb-hero-aurora {
+  background:
+    radial-gradient(40% 32% at 50% 30%, rgb(var(--accent-rgb) / .2), transparent 70%),
+    radial-gradient(28% 26% at 26% 42%, color-mix(in srgb, var(--vb-au-2) 13%, transparent), transparent 70%),
+    radial-gradient(26% 24% at 76% 44%, color-mix(in srgb, var(--vb-au-3) 11%, transparent), transparent 70%);
+}
+.vb-hero .vb-pill { position: relative; z-index: 2; }
+.vb-hero-title {
+  position: relative; z-index: 2;
+  font-weight: 300 !important; font-size: clamp(40px, 5.2vw, 68px); line-height: 1.15; letter-spacing: -.01em;
+  color: var(--vb-ink-1);
+  text-wrap: balance;
+}
+.vb-br-sm { display: none; }
+.vb-hero-sub { position: relative; z-index: 2; max-width: 36em; margin-top: 16px !important; color: var(--vb-ink-2); font-size: 16.5px; text-wrap: pretty; }
+
+/* ───────── 检索框 ───────── */
+
+.vb-ask { position: relative; z-index: 3; width: min(820px, 100%); margin-top: 36px; text-align: left; }
+.vb-askbox {
+  position: relative; display: flex; align-items: center; gap: 10px;
+  height: 64px; padding: 0 8px 0 20px; border-radius: 22px;
+  background: var(--vb-surface); border: 1px solid var(--vb-line-2);
+  box-shadow: 0 1px 2px rgba(16, 16, 40, .04), 0 18px 50px -24px rgb(var(--accent-rgb) / .35);
+  transition: border-color .3s, box-shadow .3s;
+}
+:root[data-variant="b"][data-theme="dark"] .vb-askbox { background: color-mix(in srgb, var(--vb-surface) 88%, transparent); box-shadow: 0 18px 60px -28px rgb(var(--accent-rgb) / .55); }
+/* Apple Intelligence 式的发光边框：聚焦时锥形渐变边框旋转，外圈一层模糊光 */
+.vb-askbox::before, .vb-askbox-glow {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none;
+  background: conic-gradient(from var(--vb-angle), var(--accent), var(--vb-au-2), var(--vb-au-3), var(--vb-au-4), var(--accent));
+  opacity: 0; transition: opacity .4s;
+}
+.vb-askbox::before {
+  padding: 1.5px;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+}
+.vb-askbox-glow { z-index: -1; inset: 2px; filter: blur(18px); }
+.vb-askbox.is-focus { border-color: transparent; }
+.vb-askbox.is-focus::before { opacity: 1; animation: vb-spin 4s linear infinite; }
+.vb-askbox.is-focus .vb-askbox-glow { opacity: .42; animation: vb-spin 4s linear infinite; }
+.vb-askbox.is-thinking::before { opacity: 1; animation: vb-spin 1.2s linear infinite; }
+.vb-askbox.is-thinking .vb-askbox-glow { opacity: .6; animation: vb-spin 1.2s linear infinite; }
+:root[data-variant="b"][data-theme="dark"] .vb-askbox.is-focus .vb-askbox-glow { opacity: .6; }
+.vb-askbox-icon { flex: none; color: var(--accent); }
+.vb-askbox-field { position: relative; flex: 1; min-width: 0; height: 100%; }
+.vb-askbox input {
+  position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; outline: none; background: transparent;
+  font: inherit; font-size: 17px; color: var(--vb-ink-1);
+}
+.vb-root .vb-askbox input:focus-visible { outline: none; }
+.vb-askbox-ph { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); display: flex; align-items: center; font-size: 17px; color: var(--vb-ink-3); pointer-events: none; white-space: nowrap; overflow: hidden; }
+.vb-caret { display: inline-block; width: 2px; height: 1.1em; margin-left: 2px; border-radius: 1px; background: var(--accent); animation: vb-blink 1.05s steps(1) infinite; }
+@keyframes vb-blink { 50% { opacity: 0; } }
+.vb-askbox-clear { display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: var(--vb-ink-3); cursor: pointer; }
+.vb-askbox-clear:hover { background: var(--vb-surface-2); color: var(--vb-ink-1); }
+.vb-askbox-go {
+  display: grid; place-items: center; flex: none; width: 46px; height: 46px; border-radius: 15px; border: 0; cursor: pointer;
+  background: var(--accent); color: var(--accent-contrast);
+  box-shadow: 0 6px 20px -8px rgb(var(--accent-rgb) / .8);
+  transition: transform .2s var(--vb-ease), box-shadow .2s;
+}
+.vb-askbox-go:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -8px rgb(var(--accent-rgb) / .9); }
+.vb-askbox-go:active { transform: scale(.96); }
+.vb-ask-hint { margin-top: 10px !important; font-size: 12.5px; color: var(--vb-ink-3); text-align: center; }
+.vb-suggest { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+.vb-suggest button {
+  height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--vb-line); background: color-mix(in srgb, var(--vb-surface) 70%, transparent);
+  color: var(--vb-ink-2); font: inherit; font-size: 13.5px; cursor: pointer; transition: border-color .2s, color .2s, background .2s, transform .2s var(--vb-ease);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.vb-suggest button:hover { border-color: rgb(var(--accent-rgb) / .4); color: var(--vb-ink-1); background: rgb(var(--accent-rgb) / .06); transform: translateY(-1px); }
+.vb-suggest.is-inline { justify-content: flex-start; margin-top: 14px; }
+
+/* ───────── 回答卡片 ───────── */
+
+.vb-answer-slot { margin-top: 22px; }
+.vb-answer-slot:empty { display: none; }
+.vb-answer {
+  position: relative; padding: 22px 24px 18px; border-radius: 22px;
+  background: var(--vb-surface); border: 1px solid var(--vb-line);
+  box-shadow: var(--vb-shadow-lg);
+  animation: vb-card-in .5s var(--vb-spring) both;
+}
+.vb-answer::before {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(120deg, rgb(var(--accent-rgb) / .55), color-mix(in srgb, var(--vb-au-3) 40%, transparent) 40%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+}
+@keyframes vb-card-in { from { opacity: 0; transform: translateY(10px) scale(.985); } }
+.vb-answer-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: var(--vb-ink-2); font-size: 13.5px; }
+.vb-answer-head h3 { font-size: 15px; font-weight: 500; color: var(--vb-ink-1); }
+.vb-answer-dot { width: 10px; height: 10px; flex: none; border-radius: 50%; background: conic-gradient(var(--accent), var(--vb-au-2), var(--vb-au-3), var(--vb-au-4), var(--accent)); box-shadow: 0 0 10px rgb(var(--accent-rgb) / .6); }
+.vb-answer.is-thinking .vb-answer-dot { animation: vb-rotate 1s linear infinite; }
+.vb-answer-note { margin-left: auto; padding: 2px 9px; border-radius: 999px; background: var(--vb-surface-2); color: var(--vb-ink-3); font-size: 11.5px; white-space: nowrap; }
+.vb-answer-text { font-size: 17.5px; line-height: 1.75; color: var(--vb-ink-1); }
+.vb-answer-text strong { font-weight: 500; color: var(--accent); }
+:root[data-variant="b"][data-theme="dark"] .vb-answer-text strong { color: color-mix(in srgb, var(--accent) 80%, #fff); }
+.vb-w { display: inline; animation: vb-word .7s var(--vb-ease) both; animation-delay: calc(var(--i) * 34ms); }
+@keyframes vb-word { from { opacity: 0; filter: blur(8px); } }
+.vb-answer-viz { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 24px; align-items: start; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--vb-line); animation: vb-rise .7s var(--vb-spring) both; animation-delay: var(--after); }
+@keyframes vb-rise { from { opacity: 0; transform: translateY(8px); } }
+.vb-answer-figs { display: grid; gap: 12px; margin: 0; }
+.vb-answer-figs > div { display: grid; gap: 2px; }
+.vb-answer-figs dt { font-size: 12.5px; color: var(--vb-ink-3); }
+.vb-answer-figs dd { margin: 0; display: flex; align-items: baseline; font-size: 28px; font-weight: 500; line-height: 1.1; color: var(--vb-ink-1); }
+.vb-answer-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 18px; padding-top: 12px; border-top: 1px dashed var(--vb-line-2); font-size: 12.5px; color: var(--vb-ink-3); }
+.vb-answer-foot .vb-link { margin-left: auto; font-size: 13px; }
+.vb-answer.is-fallback .vb-answer-text { color: var(--vb-ink-2); font-size: 16px; }
+.vb-shimmer { display: grid; gap: 10px; }
+.vb-shimmer i { position: relative; display: block; height: 14px; border-radius: 7px; background: var(--vb-surface-2); overflow: hidden; }
+.vb-shimmer i::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgb(var(--accent-rgb) / .16), transparent); transform: translateX(-100%); animation: vb-shimmer 1.2s linear infinite; }
+.vb-shimmer i:nth-child(2) { width: 82%; }
+.vb-shimmer i:nth-child(3) { width: 56%; }
+@keyframes vb-shimmer { to { transform: translateX(100%); } }
+
+/* ───────── 关键指标 ───────── */
+
+.vb-metrics-sec { margin-top: 96px; }
+.vb-metrics {
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none;
+  border-radius: var(--vb-r-lg); background: var(--vb-surface); border: 1px solid var(--vb-line); box-shadow: var(--vb-shadow);
+}
+.vb-metric { position: relative; display: grid; grid-template-rows: auto auto 1fr auto; gap: 6px; padding: 22px var(--vb-pad); min-width: 0; }
+.vb-metric + .vb-metric::before { content: ""; position: absolute; left: 0; top: 22px; bottom: 22px; width: 1px; background: var(--vb-line); }
+.vb-metric-label { font-size: 13px; color: var(--vb-ink-2); }
+.vb-metric-value { display: flex; align-items: baseline; font-size: clamp(26px, 2.4vw, 34px); font-weight: 500; line-height: 1.1; color: var(--vb-ink-1); white-space: nowrap; }
+.vb-metric-value small { font-size: 13px; }
+.vb-metric-viz { display: flex; align-items: center; min-height: 36px; }
+.vb-metric-foot { font-size: 12.5px; color: var(--vb-ink-3); }
+.vb-meter { position: relative; display: block; width: 100%; height: 6px; border-radius: 3px; background: var(--vb-track); overflow: hidden; }
+.vb-meter i { position: absolute; inset: 0 auto 0 0; border-radius: 0 3px 3px 0; background: linear-gradient(90deg, rgb(var(--accent-rgb) / .55), var(--accent)); }
+.vb-meter.is-2 i { background: linear-gradient(90deg, color-mix(in srgb, var(--vb-au-3) 55%, transparent), var(--vb-au-3)); }
+
+/* ───────── 洞察流：倾斜卡片 + 锥形渐变边框 ───────── */
+
+.vb-insights { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--vb-gap); }
+.vb-tilt { --rx: 0deg; --ry: 0deg; --gx: 50%; --gy: 0%; position: relative; grid-column: span 5; min-width: 0; border-radius: var(--vb-r-lg); transform: perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry)); transition: transform .5s var(--vb-spring); }
+.vb-tilt.is-wide { grid-column: span 7; }
+.vb-tilt:hover { transition: transform .12s linear; }
+.vb-tilt > .vb-card { height: 100%; }
+.vb-tilt-ring {
+  position: absolute; inset: -1px; z-index: 2; border-radius: inherit; padding: 1.5px; pointer-events: none;
+  background: conic-gradient(from var(--vb-angle), transparent 0deg, var(--accent) 50deg, var(--vb-au-2) 100deg, var(--vb-au-3) 150deg, transparent 210deg, transparent 290deg, var(--vb-au-4) 330deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+  opacity: 0; transition: opacity .4s; animation: vb-spin 5s linear infinite; animation-play-state: paused;
+}
+.vb-tilt-glare { position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .4s; background: radial-gradient(420px circle at var(--gx) var(--gy), rgb(var(--accent-rgb) / .07), transparent 60%); }
+.vb-tilt:hover .vb-tilt-ring, .vb-tilt:focus-within .vb-tilt-ring { opacity: 1; animation-play-state: running; }
+.vb-tilt:hover .vb-tilt-glare { opacity: 1; }
+:root[data-variant="b"][data-theme="dark"] .vb-tilt-glare { background: radial-gradient(420px circle at var(--gx) var(--gy), rgb(var(--accent-rgb) / .14), transparent 60%); }
+.vb-chart-card .vb-eyebrow { margin-bottom: 2px; }
+
+/* ───────── 粒子成图 ───────── */
+
+.vb-particles-card { padding: var(--vb-pad) var(--vb-pad) 18px; overflow: hidden; }
+:root[data-variant="b"][data-theme="dark"] .vb-particles-card { background: radial-gradient(80% 90% at 50% 100%, rgb(var(--accent-rgb) / .08), transparent 70%), var(--vb-surface); }
+.vb-particles-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+.vb-particles-legend { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 0; padding: 0; list-style: none; }
+.vb-particles-legend li { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--vb-ink-2); }
+.vb-particles-legend b { display: inline-flex; align-items: baseline; font-size: 20px; font-weight: 500; color: var(--vb-ink-1); }
+.vb-particles-fig { position: relative; width: 100%; border-radius: 12px; outline-offset: 4px; touch-action: pan-y; }
+.vb-particles-canvas { position: absolute; left: 0; top: 0; display: block; }
+.vb-particles-axis { position: absolute; left: 0; top: 0; overflow: visible; }
+
+/* ───────── 看板与业务域 ───────── */
+
+.vb-directory { isolation: isolate; }
+.vb-directory-aurora {
+  position: absolute; z-index: -1; inset: 40px -10% -60px; pointer-events: none; filter: blur(40px);
+  background:
+    radial-gradient(30% 40% at 18% 30%, rgb(var(--accent-rgb) / .14), transparent 70%),
+    radial-gradient(26% 36% at 82% 26%, color-mix(in srgb, var(--vb-au-3) 14%, transparent), transparent 70%),
+    radial-gradient(30% 36% at 60% 86%, color-mix(in srgb, var(--vb-au-4) 16%, transparent), transparent 70%);
+}
+:root[data-variant="b"][data-theme="dark"] .vb-directory-aurora { opacity: 1.4; filter: blur(50px); }
+.vb-assets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--vb-gap); margin: 0; padding: 0; list-style: none; }
+.vb-asset { display: grid; gap: 10px; height: 100%; padding: 22px; text-decoration: none; color: var(--vb-ink-1); transition: transform .35s var(--vb-spring), border-color .3s, box-shadow .3s; }
+.vb-asset:hover { transform: translateY(-3px); border-color: rgb(var(--accent-rgb) / .35); box-shadow: 0 24px 60px -30px rgb(var(--accent-rgb) / .5); }
+.vb-asset-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.vb-asset strong { font-size: 22px; font-weight: 500; }
+.vb-asset-desc { font-size: 14px; color: var(--vb-ink-2); }
+.vb-asset-stat { font-size: 13.5px; color: var(--vb-ink-1); font-variant-numeric: tabular-nums; padding: 8px 12px; border-radius: 12px; background: rgb(var(--accent-rgb) / .07); }
+.vb-asset-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; color: var(--vb-ink-3); margin-top: 4px; }
+.vb-asset-foot svg { color: var(--accent); transition: transform .3s var(--vb-spring); }
+.vb-asset:hover .vb-asset-foot svg { transform: translate(2px, -2px); }
+.vb-domains { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--vb-gap); margin: var(--vb-gap) 0 0; padding: 0; list-style: none; }
+.vb-domain { display: grid; gap: 6px; padding: 20px 22px; }
+.vb-domain-en { font-family: var(--vb-mono); font-size: 11px; letter-spacing: .1em; color: var(--vb-ink-3); }
+.vb-domain strong { font-size: 18px; font-weight: 500; }
+.vb-domain-desc { font-size: 13.5px; color: var(--vb-ink-2); }
+.vb-domain-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; font-size: 12.5px; flex-wrap: wrap; }
+.vb-domain-cats { color: var(--vb-ink-3); }
+.vb-domain.is-planned strong, .vb-domain.is-planned .vb-domain-desc { color: var(--vb-ink-3); }
+.vb-domain.is-planned { background: color-mix(in srgb, var(--vb-glass) 60%, transparent); }
+.vb-status { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+.vb-status i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.vb-status.is-ready { background: var(--vb-ok-bg); color: var(--vb-ok); }
+.vb-status.is-planned { background: var(--vb-surface-2); color: var(--vb-ink-2); }
+.vb-status.is-planned i { background: transparent; border: 1.5px dashed currentColor; width: 8px; height: 8px; }
+
+/* ───────── 页脚 ───────── */
+
+.vb-footer { position: relative; z-index: 1; width: min(var(--vb-max), calc(100% - 48px)); margin: 120px auto 0; padding-top: 28px; border-top: 1px solid var(--vb-line); display: grid; gap: 4px; font-size: 13px; color: var(--vb-ink-3); }
+.vb-footer strong { color: var(--vb-ink-1); font-weight: 500; }
+
+/* ───────── 关闭特效 ───────── */
+
+:root[data-variant="b"][data-fx="off"] .vb-caret { animation: none; }
+:root[data-variant="b"][data-fx="off"] .vb-askbox.is-focus::before,
+:root[data-variant="b"][data-fx="off"] .vb-askbox.is-focus .vb-askbox-glow,
+:root[data-variant="b"][data-fx="off"] .vb-tilt-ring,
+:root[data-variant="b"][data-fx="off"] .vb-shimmer i::after,
+:root[data-variant="b"][data-fx="off"] .vb-w,
+:root[data-variant="b"][data-fx="off"] .vb-answer,
+:root[data-variant="b"][data-fx="off"] .vb-answer-viz { animation: none; }
+:root[data-variant="b"][data-fx="off"] .vb-tilt { transform: none; }
+
+/* ───────── 响应式 ───────── */
+
+@media (max-width: 1080px) {
+  .vb-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .vb-metric:nth-child(4)::before { display: none; }
+  .vb-metric:nth-child(n + 4) { border-top: 1px solid var(--vb-line); }
+  .vb-tilt, .vb-tilt.is-wide { grid-column: span 12; }
+  .vb-assets { grid-template-columns: 1fr; }
+  .vb-domains { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .vb-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vb-metric:nth-child(n)::before { display: none; }
+  .vb-metric:nth-child(odd):not(:first-child)::before { display: none; }
+  .vb-metric:nth-child(n + 2) { border-top: 0; }
+  .vb-metric:nth-child(n + 3) { border-top: 1px solid var(--vb-line); }
+  .vb-metric:nth-child(even)::before { display: block; }
+  .vb-metric:last-child { grid-column: span 2; }
+  .vb-answer-viz { grid-template-columns: 1fr; }
+  .vb-answer-figs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .vb-answer-figs dd { font-size: 22px; }
+  .vb-domains { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .vb-hero { padding-top: 16px; }
+  .vb-orb { width: 340px; margin: -40px auto -84px; }
+  .vb-br-sm { display: inline; }
+  .vb-hero-title { font-size: 36px; }
+  .vb-hero-sub { font-size: 15px; }
+  .vb-askbox { height: 56px; padding-left: 14px; border-radius: 18px; }
+  .vb-askbox input, .vb-askbox-ph { font-size: 15.5px; }
+  .vb-askbox-go { width: 40px; height: 40px; border-radius: 13px; }
+  .vb-suggest { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; margin-left: -16px; margin-right: -16px; padding: 0 16px 4px; scrollbar-width: none; }
+  .vb-suggest::-webkit-scrollbar { display: none; }
+  .vb-suggest li { flex: none; }
+  .vb-suggest.is-inline { flex-wrap: wrap; margin: 14px 0 0; padding: 0; overflow: visible; }
+  .vb-answer { padding: 18px 16px 14px; }
+  .vb-answer-text { font-size: 16px; }
+  .vb-answer-note { display: none; }
+  .vb-answer-foot .vb-link { margin-left: 0; }
+  .vb-metric { padding: 16px; }
+  .vb-metric-value { font-size: 24px; }
+  .vb-footer { width: calc(100% - 32px); }
+}

@@ -1,0 +1,248 @@
+/*
+ * 方案 A · 白昼测控 —— 设计 token 与基础样式。
+ * 所有选择器以 .va- 开头，或写在 :root[data-variant="a"] 之下（三版 CSS 同时存在）。
+ */
+
+:root[data-variant="a"] {
+  --va-bg: #FAFAF9;
+  --va-surface: #FFFFFF;
+  --va-surface-2: #F4F3F1;
+  --va-line: rgba(21, 24, 31, .08);
+  --va-line-strong: rgba(21, 24, 31, .14);
+  --va-grid: rgba(21, 24, 31, .05);
+  --va-grid-major: rgba(21, 24, 31, .08);
+  --va-ink-1: #15181F;
+  --va-ink-2: #51555E;
+  --va-ink-3: #6B6F78;
+  --va-ink-rgb: 21 24 31;
+  --va-signal: #E2621B;
+  --va-signal-rgb: 226 98 27;
+  --va-m1: var(--accent);
+  --va-m2: #0E8C8C;
+  --va-m3: #835CBE;
+  --va-m4: #B7791F;
+  --va-m5: #51555E;
+  --va-ok: #17784C;
+  --va-warn: #9A5B06;
+  --va-bad: #C4501A;
+  --va-navy: #0B1430;
+  --va-glass: rgba(250, 250, 249, .72);
+  --va-tip-bg: rgba(255, 255, 255, .94);
+  --va-shadow:
+    0 0 0 0 rgba(21, 24, 31, 0),
+    0 1px 1px rgba(21, 24, 31, .03),
+    0 2px 4px -1px rgba(21, 24, 31, .04),
+    0 8px 16px -6px rgba(21, 24, 31, .06),
+    0 24px 40px -18px rgba(21, 24, 31, .10);
+  --va-shadow-pop: 0 1px 2px rgba(21, 24, 31, .06), 0 12px 32px -8px rgba(21, 24, 31, .18), 0 32px 64px -24px rgba(21, 24, 31, .22);
+  --va-area-alpha: .16;
+  --va-font: "DH PuHuiTi", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --va-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+  --va-radius: 12px;
+  --va-radius-sm: 8px;
+  --va-gap: 16px;
+  --va-pad: 24px;
+  --va-section: 120px;
+  --va-ease: cubic-bezier(.16, 1, .3, 1);
+  --va-flow-dur: 2.6s;
+  --va-nav-h: 64px;
+}
+
+:root[data-variant="a"][data-theme="dark"] {
+  --va-bg: #0A0C11;
+  --va-surface: #11141A;
+  --va-surface-2: #191D25;
+  --va-line: rgba(255, 255, 255, .08);
+  --va-line-strong: rgba(255, 255, 255, .14);
+  --va-grid: rgba(255, 255, 255, .05);
+  --va-grid-major: rgba(255, 255, 255, .075);
+  --va-ink-1: #E9EBEF;
+  --va-ink-2: #A0A5AE;
+  --va-ink-3: #7C818A;
+  --va-ink-rgb: 233 235 239;
+  --va-signal: #FA934E;
+  --va-signal-rgb: 250 147 78;
+  --va-m2: #3CC4BE;
+  --va-m3: #AC8BF0;
+  --va-m4: #E3AA4E;
+  --va-m5: #A0A5AE;
+  --va-ok: #4CC38A;
+  --va-warn: #E8B04F;
+  --va-bad: #FA934E;
+  --va-navy: #06080E;
+  --va-glass: rgba(10, 12, 17, .7);
+  --va-tip-bg: rgba(25, 29, 37, .96);
+  --va-shadow: none;
+  --va-shadow-pop: 0 0 0 1px rgba(255, 255, 255, .08), 0 24px 64px -16px rgba(0, 0, 0, .7);
+  --va-area-alpha: .22;
+}
+
+:root[data-variant="a"][data-density="compact"] {
+  --va-gap: 12px;
+  --va-pad: 18px;
+  --va-section: 88px;
+}
+:root[data-variant="a"][data-fx="subtle"] { --va-flow-dur: 5s; }
+
+:root[data-variant="a"] body {
+  background: var(--va-bg);
+  color: var(--va-ink-1);
+}
+:root[data-variant="a"] ::selection { background: rgb(var(--accent-rgb) / .2); }
+
+.va-root {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: clip;
+  font-family: var(--va-font);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--va-ink-1);
+  background: var(--va-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+:root[data-variant="a"][data-density="compact"] .va-root { font-size: 14px; }
+/* 重置用 :where() 保持零优先级，组件自己的样式总能覆盖 */
+:where(.va-root) *, :where(.va-root) *::before, :where(.va-root) *::after { box-sizing: border-box; }
+:where(.va-root) :where(a) { color: inherit; text-decoration: none; }
+:where(.va-root) :where(button) { font: inherit; color: inherit; }
+:where(.va-root) :where(h1, h2, h3, h4, p, dl, dd, ul, ol, figure) { margin: 0; padding: 0; }
+:where(.va-root) :where(ul, ol) { list-style: none; }
+.va-root :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+:where(.va-root) svg text { font-family: var(--va-font); }
+
+.va-sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.va-skip { position: fixed; left: 12px; top: 12px; z-index: 300; padding: 8px 14px; border-radius: 8px; background: var(--va-ink-1); color: var(--va-bg); transform: translateY(-160%); transition: transform .2s; }
+.va-skip:focus-visible { transform: none; }
+
+.va-wrap { width: 100%; max-width: 1320px; margin: 0 auto; padding: 0 clamp(16px, 3.2vw, 40px); }
+
+/* 等宽遥测标签 */
+.va-mono {
+  font-family: var(--va-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--va-ink-3);
+  font-weight: 500;
+}
+.va-num { font-variant-numeric: tabular-nums lining-nums; font-weight: 500; }
+
+/* 按钮 */
+.va-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 44px; padding: 0 18px; border-radius: 10px;
+  border: 1px solid var(--va-line-strong);
+  background: var(--va-surface); color: var(--va-ink-1);
+  font-size: 15px; font-weight: 500; cursor: pointer; white-space: nowrap;
+  transition: transform .25s var(--va-ease), background-color .2s, border-color .2s;
+}
+.va-btn:hover { border-color: rgb(var(--va-ink-rgb) / .28); }
+.va-btn:active { transform: translateY(1px); }
+.va-btn svg { flex: none; transition: transform .3s var(--va-ease); }
+.va-btn:hover svg.va-go { transform: translateX(3px); }
+.va-btn-primary {
+  background: var(--accent); color: var(--va-on-accent, var(--accent-contrast)); border-color: transparent;
+  box-shadow: 0 1px 0 rgb(255 255 255 / .18) inset, 0 6px 18px -6px rgb(var(--accent-rgb) / .55);
+}
+.va-btn-primary:hover { border-color: transparent; background: color-mix(in srgb, var(--accent) 88%, #000); }
+:root[data-variant="a"][data-theme="dark"] .va-btn-primary:hover { background: color-mix(in srgb, var(--accent) 86%, #fff); }
+.va-btn-sm { height: 34px; padding: 0 12px; font-size: 13px; border-radius: 8px; }
+
+/* 图标按钮（导航右侧、抽屉关闭） */
+.va-icon-btn {
+  display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 10px;
+  border: 1px solid var(--va-line-strong); background: color-mix(in srgb, var(--va-surface) 78%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  color: var(--va-ink-1); cursor: pointer; transition: background-color .2s, border-color .2s;
+}
+.va-icon-btn:hover { background: var(--va-surface); border-color: rgb(var(--va-ink-rgb) / .26); }
+
+/* 状态徽标：颜色 + 图标 + 文字 */
+.va-status { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; white-space: nowrap; color: var(--va-ink-1); }
+.va-status svg { flex: none; }
+.va-status.is-ok svg { color: var(--va-ok); }
+.va-status.is-warn svg { color: var(--va-warn); }
+.va-status.is-bad svg { color: var(--va-bad); }
+
+/* 段落标题 */
+.va-section { position: relative; padding: var(--va-section) 0 0; scroll-margin-top: 72px; }
+.va-sec-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 16px 32px; margin-bottom: 32px; }
+.va-sec-index { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.va-sec-index::after { content: ""; flex: 0 0 48px; height: 1px; background: var(--va-line-strong); }
+.va-sec-head h2 { font-size: clamp(26px, 2.6vw, 34px); line-height: 1.2; font-weight: 500; letter-spacing: 0; }
+.va-sec-head p.va-sec-desc { margin-top: 10px; color: var(--va-ink-2); max-width: 44em; }
+.va-sec-aside { color: var(--va-ink-3); font-size: 13px; text-align: right; }
+
+/* 标签 */
+.va-tag { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 6px; font-size: 12px; color: var(--va-ink-2); background: var(--va-surface-2); border: 1px solid var(--va-line); white-space: nowrap; }
+
+/* 十字描角：四角各一个 + */
+.va-cross { position: relative; }
+.va-cross::after {
+  --c: rgb(var(--va-ink-rgb) / .38);
+  content: ""; position: absolute; inset: -5px; pointer-events: none;
+  background:
+    linear-gradient(var(--c), var(--c)) 0 4px / 9px 1px,
+    linear-gradient(var(--c), var(--c)) 4px 0 / 1px 9px,
+    linear-gradient(var(--c), var(--c)) 100% 4px / 9px 1px,
+    linear-gradient(var(--c), var(--c)) calc(100% - 4px) 0 / 1px 9px,
+    linear-gradient(var(--c), var(--c)) 0 calc(100% - 4px) / 9px 1px,
+    linear-gradient(var(--c), var(--c)) 4px 100% / 1px 9px,
+    linear-gradient(var(--c), var(--c)) 100% calc(100% - 4px) / 9px 1px,
+    linear-gradient(var(--c), var(--c)) calc(100% - 4px) 100% / 1px 9px;
+  background-repeat: no-repeat;
+}
+
+/* 聚光灯边框：容器上 useSpotlight 写入 --mx/--my，一组卡片共用一个光源 */
+.va-spot { position: relative; isolation: isolate; }
+.va-spot::before {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none; z-index: 2;
+  background: radial-gradient(320px circle at var(--mx, -999px) var(--my, -999px), rgb(var(--accent-rgb) / .85), rgb(var(--accent-rgb) / .22) 38%, transparent 68%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0; transition: opacity .4s ease;
+}
+.va-spot::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0;
+  background: radial-gradient(520px circle at var(--mx, -999px) var(--my, -999px), rgb(var(--accent-rgb) / .055), transparent 55%);
+  opacity: 0; transition: opacity .4s ease;
+}
+.va-spotlit:hover .va-spot::before { opacity: 1; }
+.va-spot:hover::after { opacity: 1; }
+@media (hover: none) { .va-spot::before, .va-spot::after { display: none; } }
+
+/* 卡片 */
+.va-card {
+  position: relative; border-radius: var(--va-radius); background: var(--va-surface);
+  border: 1px solid var(--va-line); box-shadow: var(--va-shadow);
+  padding: var(--va-pad); min-width: 0;
+}
+.va-card > * { position: relative; z-index: 1; }
+.va-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px 16px; flex-wrap: wrap; margin-bottom: 14px; }
+.va-card-head h3 { font-size: 17px; line-height: 1.35; font-weight: 500; margin-top: 4px; }
+.va-card-desc { font-size: 13px; color: var(--va-ink-2); margin-top: 4px; }
+
+/* 分段切换 */
+.va-seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 9px; background: var(--va-surface-2); border: 1px solid var(--va-line); }
+.va-seg button { height: 28px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: var(--va-ink-2); font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.va-seg button[aria-pressed="true"] { background: var(--va-surface); color: var(--va-ink-1); box-shadow: 0 1px 2px rgba(21, 24, 31, .08), 0 0 0 1px var(--va-line); }
+:root[data-variant="a"][data-theme="dark"] .va-seg button[aria-pressed="true"] { background: #232833; box-shadow: none; }
+
+/* 关闭特效 / 减少动态：所有过渡和循环动画都停在终态 */
+:root[data-variant="a"][data-fx="off"] .va-root *,
+:root[data-variant="a"][data-fx="off"] .va-root *::before,
+:root[data-variant="a"][data-fx="off"] .va-root *::after {
+  animation-duration: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
+}
+
+/* 拿不到动画帧时（见 lib.tsx 的帧探测）直接显示终态 */
+.va-root.is-static *, .va-root.is-static *::before, .va-root.is-static *::after { transition: none !important; animation: none !important; }

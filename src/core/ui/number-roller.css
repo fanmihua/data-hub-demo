@@ -1,0 +1,6 @@
+.nr { display: inline-flex; align-items: baseline; font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; line-height: 1; }
+.nr-col { display: inline-block; height: 1em; overflow: hidden; line-height: 1; vertical-align: baseline; }
+.nr-stack { display: flex; flex-direction: column; transition-property: transform; transition-timing-function: cubic-bezier(.16, 1, .3, 1); will-change: transform; }
+.nr-stack > span { display: block; height: 1em; line-height: 1; }
+.nr-sym { display: inline-block; line-height: 1; }
+@media (prefers-reduced-motion: reduce) { .nr-stack { transition: none !important; } }

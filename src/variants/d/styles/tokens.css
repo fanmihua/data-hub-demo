@@ -1,0 +1,188 @@
+/*
+ * 方案 D · 数据舱 —— 设计 token。
+ * 规则：每条选择器以 .vd- 开头，或写在 :root[data-variant="d"] 之下。
+ * 主色只用 --accent / --accent-rgb 派生；尾焰橙 --vd-signal 面积不超过 3%。
+ *
+ * 字阶（全版只用这 9 档）：11 / 12 / 13 / 14 / 16 / 20 / 28 / 44 / 72
+ *   11–12 等宽遥测小字与标签；13–14 正文与控件；16–20 小标题；28 / 44 / 72 数黑体大数与屏幕标题。
+ * 间距：4px 起步、8px 为基本单位；面板内边距统一 --vd-pad，面板间距 --vd-gap。
+ * 表面（每种只有一套做法）：
+ *   画布   --vd-bg（冷中性灰，不偏蓝）+ 极淡蓝图网格
+ *   面板   .vd-panel：--vd-panel + 1px --vd-line + --vd-shadow（分层很淡）
+ *   浮层   .vd-pop：--vd-pop-bg + --vd-line-strong + --vd-shadow-pop
+ *   玻璃   .vd-glass（顶栏、浮动工具条）：半透明 + 背景模糊 + 顶部内高光
+ * 交互：悬停 / 按下 / 焦点 120–160ms；按下 scale(.98)；焦点环 2px accent + 2px 偏移。
+ */
+
+@property --vd-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+
+:root[data-variant="d"] {
+  /* 颜色 */
+  --vd-bg: #F4F5F7;
+  --vd-panel: #FFFFFF;
+  --vd-panel-2: #F8F9FA;
+  --vd-panel-3: #EFF1F4;
+  --vd-line: rgba(16, 24, 40, .08);
+  --vd-line-strong: rgba(16, 24, 40, .14);
+  --vd-ink-1: #0E1320;
+  --vd-ink-2: #4B5466;
+  --vd-ink-3: #7A8294;
+  --vd-signal: #E2621B;
+  --vd-m1: var(--accent);
+  --vd-m2: #0E8C8C;
+  --vd-m3: #835CBE;
+
+  /* 状态色（一律配图标或文字） */
+  --vd-ok: #0B7A55;
+  --vd-warn: #9A5B00;
+  --vd-bad: #B4233B;
+
+  /* 主色派生 */
+  --vd-accent-ink: color-mix(in srgb, var(--accent) 82%, #0E1320);
+  --vd-accent-wash: rgb(var(--accent-rgb) / .07);
+  --vd-accent-line: rgb(var(--accent-rgb) / .28);
+  --vd-ring: 0 0 0 3px rgb(var(--accent-rgb) / .14);
+
+  /* 光球与极光描边的色标：主色 → 主色提亮 → 青 → 桃（桃色只在光球高光里，面积极小） */
+  --vd-au-2: color-mix(in srgb, var(--accent) 55%, #FFFFFF);
+  --vd-au-3: #17B3AD;
+  --vd-au-4: #FFB48C;
+  /* 用法：background: conic-gradient(from var(--vd-angle), var(--vd-aurora-stops))，写在要旋转的元素上，动画改 --vd-angle */
+  --vd-aurora-stops: var(--accent), var(--vd-au-2), var(--vd-au-3), var(--vd-m3), var(--vd-au-4), var(--accent);
+
+  /* 表面 */
+  --vd-shadow: 0 0 0 .5px rgba(16, 24, 40, .02), 0 1px 1px rgba(16, 24, 40, .03), 0 2px 4px -2px rgba(16, 24, 40, .05), 0 12px 24px -16px rgba(16, 24, 40, .1);
+  --vd-shadow-hover: 0 0 0 .5px rgba(16, 24, 40, .03), 0 1px 2px rgba(16, 24, 40, .04), 0 6px 14px -6px rgba(16, 24, 40, .08), 0 22px 40px -22px rgba(16, 24, 40, .16);
+  --vd-shadow-pop: 0 1px 2px rgba(16, 24, 40, .06), 0 10px 24px -8px rgba(16, 24, 40, .14), 0 32px 64px -24px rgba(16, 24, 40, .18);
+  --vd-hi: inset 0 1px 0 rgba(255, 255, 255, .9);
+  --vd-pop-bg: rgba(255, 255, 255, .88);
+  --vd-glass: rgba(244, 245, 247, .72);
+  --vd-glass-line: rgba(16, 24, 40, .07);
+  --vd-grid: rgba(16, 24, 40, .045);
+  --vd-grid-strong: rgba(16, 24, 40, .07);
+  --vd-track: rgba(16, 24, 40, .06);
+  /* 凹槽（面板里再放一块图表或说明时用）：上浅灰到白的极淡渐变 + 1px 描边，不再加阴影 */
+  --vd-well: linear-gradient(180deg, var(--vd-panel-2), var(--vd-panel) 72%);
+  /* 控件的最轻阴影（输入框、分段、标签悬停） */
+  --vd-shadow-xs: 0 1px 2px rgba(16, 24, 40, .05);
+
+  /* 尺寸 */
+  --vd-radius: 12px;
+  --vd-radius-sm: 8px;
+  --vd-radius-lg: 16px;
+  --vd-rail-w: 68px;
+  --vd-top-h: 52px;
+  --vd-pad: 16px;
+  --vd-gap: 12px;
+  --vd-gutter: 16px;
+  /* 底部方案切换条的安全区：一屏布局的内容不进入这块 */
+  --vd-dock-safe: 76px;
+
+  /* 字体 */
+  --vd-font-display: "DH ShuHeiTi", "DH PuHuiTi", sans-serif;
+  --vd-font-body: "DH PuHuiTi", "PingFang SC", sans-serif;
+  --vd-font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* 字阶 */
+  --vd-fs-11: 11px;
+  --vd-fs-12: 12px;
+  --vd-fs-13: 13px;
+  --vd-fs-14: 14px;
+  --vd-fs-16: 16px;
+  --vd-fs-20: 20px;
+  --vd-fs-28: 28px;
+  --vd-fs-44: 44px;
+  --vd-fs-72: 72px;
+
+  /* 动效 */
+  --vd-ease: cubic-bezier(.2, .8, .2, 1);
+  --vd-spring: cubic-bezier(.16, 1, .3, 1);
+  --vd-t: 140ms;
+
+  color-scheme: light;
+}
+
+:root[data-variant="d"][data-density="compact"] {
+  --vd-pad: 12px;
+  --vd-gap: 10px;
+  --vd-gutter: 12px;
+}
+
+/* 深色：只做基础定义，保证能读 */
+:root[data-variant="d"][data-theme="dark"] {
+  --vd-bg: #0B0D12;
+  --vd-panel: #12151C;
+  --vd-panel-2: #171B23;
+  --vd-panel-3: #1E232D;
+  --vd-line: rgba(255, 255, 255, .08);
+  --vd-line-strong: rgba(255, 255, 255, .15);
+  --vd-ink-1: #EEF1F6;
+  --vd-ink-2: #A9B0BE;
+  --vd-ink-3: #808899;
+  --vd-signal: #FF7A3D;
+  --vd-m2: #2BB8B2;
+  --vd-m3: #A88AE6;
+  --vd-ok: #3DD6A0;
+  --vd-warn: #F2B44A;
+  --vd-bad: #FF7A8A;
+  --vd-accent-ink: color-mix(in srgb, var(--accent) 80%, #FFFFFF);
+  --vd-accent-wash: rgb(var(--accent-rgb) / .12);
+  --vd-au-2: color-mix(in srgb, var(--accent) 60%, #FFFFFF);
+  --vd-au-3: #3FE0D8;
+  --vd-shadow: 0 0 0 1px rgba(255, 255, 255, .02), 0 12px 32px -18px rgba(0, 0, 0, .7);
+  --vd-shadow-hover: 0 0 0 1px rgba(255, 255, 255, .04), 0 18px 40px -18px rgba(0, 0, 0, .8);
+  --vd-shadow-pop: 0 0 0 1px rgba(255, 255, 255, .06), 0 24px 56px -16px rgba(0, 0, 0, .75);
+  --vd-hi: inset 0 1px 0 rgba(255, 255, 255, .05);
+  --vd-pop-bg: rgba(23, 27, 35, .9);
+  --vd-glass: rgba(11, 13, 18, .7);
+  --vd-glass-line: rgba(255, 255, 255, .07);
+  --vd-grid: rgba(255, 255, 255, .035);
+  --vd-grid-strong: rgba(255, 255, 255, .06);
+  --vd-track: rgba(255, 255, 255, .07);
+  --vd-well: linear-gradient(180deg, var(--vd-panel-2), var(--vd-panel) 72%);
+  --vd-shadow-xs: 0 1px 2px rgba(0, 0, 0, .3);
+  color-scheme: dark;
+}
+
+:root[data-variant="d"] body {
+  margin: 0;
+  background: var(--vd-bg);
+  color: var(--vd-ink-1);
+  font-family: var(--vd-font-body);
+  font-size: var(--vd-fs-14);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+:root[data-variant="d"] ::selection { background: rgb(var(--accent-rgb) / .18); color: inherit; }
+:root[data-variant="d"] { scrollbar-color: rgba(16, 24, 40, .18) transparent; }
+:root[data-variant="d"][data-theme="dark"] { scrollbar-color: rgba(255, 255, 255, .18) transparent; }
+.vd-app, .vd-app * { scrollbar-width: thin; }
+.vd-app *::-webkit-scrollbar { width: 8px; height: 8px; }
+.vd-app *::-webkit-scrollbar-thumb { background: rgba(16, 24, 40, .16); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+.vd-app *::-webkit-scrollbar-thumb:hover { background-color: rgba(16, 24, 40, .28); }
+:root[data-variant="d"][data-theme="dark"] .vd-app *::-webkit-scrollbar-thumb { background-color: rgba(255, 255, 255, .16); }
+.vd-app *::-webkit-scrollbar-track { background: transparent; }
+
+/* 焦点：2px 主色 + 2px 偏移 */
+.vd-app :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.vd-app :focus:not(:focus-visible) { outline: none; }
+
+/* 读屏专用 */
+.vd-sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* 图标一种粗细：lucide 的线宽按 16px 算好，被 CSS 缩到 14 / 12px 的图标会变细。
+ * 用 non-scaling-stroke 把线宽固定为屏幕上的 1.6px，任何尺寸都一样粗。 */
+.vd-app svg.vd-ic { stroke-width: 1.6px; }
+.vd-app svg.vd-ic * { vector-effect: non-scaling-stroke; }
+
+/* 等宽遥测小字 */
+.vd-mono { font-family: var(--vd-font-mono); font-size: var(--vd-fs-11); letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.vd-num { font-family: var(--vd-font-display); font-variant-numeric: tabular-nums lining-nums; }
+
+/* 关闭特效：各组件在自己的样式里写 :root[data-variant="d"][data-fx="off"] … { animation: none }，停在终态。
+ * 系统要求减少动态时底座会把 data-fx 设为 off，这里再兜底压短所有动画与过渡。 */
+@media (prefers-reduced-motion: reduce) {
+  .vd-app *, .vd-app *::before, .vd-app *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}

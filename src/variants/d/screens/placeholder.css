@@ -1,0 +1,67 @@
+/*
+ * 占位界面的样式（Task 4–8 替换各界面后，不再引用的部分可以删掉）。
+ * 只用 .vd-ph- 前缀，不要在正式界面里复用这些类名。
+ */
+
+.vd-ph { display: flex; flex-direction: column; gap: var(--vd-gap); }
+.vd-ph-title { margin: 0; font-family: var(--vd-font-display); font-weight: 700; font-size: var(--vd-fs-44); line-height: 1.12; letter-spacing: 0; color: var(--vd-ink-1); text-wrap: balance; }
+.vd-ph-title.is-sm { font-size: var(--vd-fs-28); }
+.vd-ph-sub { margin: 10px 0 0; font-size: var(--vd-fs-16); color: var(--vd-ink-2); }
+.vd-ph-text { margin: 0 0 14px; font-size: var(--vd-fs-14); line-height: 1.7; color: var(--vd-ink-2); }
+
+/* 欢迎 */
+.vd-ph-welcome { justify-content: space-between; }
+.vd-ph-hero { display: flex; flex-direction: column; align-items: center; text-align: center; width: min(760px, 100%); margin: auto; padding-top: 2vh; }
+.vd-ph-hero .vd-ask { margin-top: 28px; }
+.vd-ph-metrics { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--vd-gap); }
+
+/* 问答 */
+.vd-ph-chat { align-items: center; }
+.vd-ph-chat-center { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; width: min(720px, 100%); text-align: center; }
+.vd-ph-chat-card { width: 100%; text-align: left; }
+.vd-ph-chat-dock { width: min(760px, 100%); }
+
+/* 资产 */
+.vd-ph-fill { flex: 1; min-height: 0; }
+.vd-ph-count { font-family: var(--vd-font-mono); font-size: var(--vd-fs-11); color: var(--vd-ink-3); padding-right: 6px; }
+.vd-ph-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+.vd-ph-search { display: flex; align-items: center; gap: 8px; width: min(320px, 100%); height: 32px; padding: 0 10px; border: 1px solid var(--vd-line-strong); border-radius: 9px; background: var(--vd-panel); color: var(--vd-ink-3); }
+.vd-ph-search:focus-within { border-color: var(--vd-accent-line); box-shadow: var(--vd-ring); }
+.vd-ph-search input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent; font: inherit; font-size: var(--vd-fs-13); color: var(--vd-ink-1); }
+.vd-app .vd-ph-search input:focus-visible { outline: none; }
+.vd-ph-list { margin: 0; padding: 0; list-style: none; }
+.vd-ph-list li { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 120px 96px; align-items: center; gap: 16px; height: 44px; padding: 0 8px; border-bottom: 1px solid var(--vd-line); font-size: var(--vd-fs-13); }
+.vd-ph-list li:hover { background: var(--vd-panel-2); }
+.vd-ph-list li.is-planned { color: var(--vd-ink-3); }
+.vd-ph-list-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vd-ph-list-meta { color: var(--vd-ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vd-ph-list-val { font-variant-numeric: tabular-nums; text-align: right; color: var(--vd-ink-2); }
+
+/* 看板 */
+.vd-ph-board-head { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: 24px; }
+.vd-ph-board-head .vd-kicker { margin-bottom: 6px; }
+.vd-ph-grid { flex: 1; min-height: 0; display: grid; gap: var(--vd-gap); }
+.vd-ph-cell { min-width: 0; min-height: 0; display: flex; }
+.vd-ph-cell > .vd-panel { flex: 1; }
+.vd-ph-cell .vd-panel-body { overflow: hidden; }
+.vd-ph-stat { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; height: 100%; }
+.vd-ph-chart { display: grid; place-items: center; height: 100%; min-height: 24px; border-radius: 8px; background: repeating-linear-gradient(0deg, transparent 0 23px, var(--vd-grid) 23px 24px); color: var(--vd-ink-3); font-size: var(--vd-fs-12); }
+.vd-ph-globe .vd-panel-body { display: grid; place-items: center; overflow: hidden; }
+.vd-ph-orbits { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; }
+.vd-ph-orbits i { grid-area: 1 / 1; width: 62%; aspect-ratio: 1; border-radius: 50%; border: 1px solid var(--vd-line-strong); }
+.vd-ph-orbits i:nth-child(2) { width: 86%; aspect-ratio: 2.4; border-style: dashed; transform: rotate(-14deg); border-color: rgb(var(--accent-rgb) / .3); }
+.vd-ph-orbits i:nth-child(3) { width: 74%; aspect-ratio: 3; transform: rotate(18deg); border-color: color-mix(in srgb, var(--vd-m3) 35%, transparent); }
+.vd-ph-globe-num { position: relative; text-align: center; }
+.vd-ph-globe-num .vd-big { align-items: center; }
+
+.vd-ph-missing { align-items: center; justify-content: center; }
+.vd-ph-missing .vd-panel { width: min(520px, 100%); }
+
+@media (max-width: 1023px) {
+  .vd-ph-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vd-ph-board-head { grid-template-columns: minmax(0, 1fr); }
+  .vd-ph-grid { display: flex; flex-direction: column; }
+  .vd-ph-cell { min-height: 140px; }
+  .vd-ph-list li { grid-template-columns: minmax(0, 1fr) 96px; }
+  .vd-ph-list-meta, .vd-ph-list .vd-spark { display: none; }
+}

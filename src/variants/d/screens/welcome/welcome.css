@@ -1,0 +1,329 @@
+/*
+ * 方案 D · 欢迎页 #/d。一屏网格：
+ *   列：主列（问候 + 问答框 + 快捷入口）│ 右窄栏（最近看板 / 收藏、今日要点）
+ *   行：上方内容 │ 地平线上的指标条（横跨两列）
+ * 地球层 .vd-wl-globe 绝对定位在最底层：宽为主列的 1.5 倍、中心对准主列，底边贴到屏幕底（方案切换条下方），
+ * 高度取屏幕的 66%，球冠顶点刚好从指标条上方探出来，轨道弧越过地平线。
+ * 入场：0–700ms 内编排完；关闭特效时没有动画，直接是终态。
+ */
+
+.vd-wl {
+  --wl-aside: clamp(264px, 21vw, 320px);
+  --wl-gap: var(--vd-gap);
+  --wl-mainw: calc(100% - 2 * var(--vd-gutter) - var(--wl-aside) - var(--wl-gap));
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--wl-aside);
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: var(--wl-gap);
+  overflow: hidden;
+}
+
+/* ───────── 地平线地球 ───────── */
+
+.vd-wl-globe {
+  position: absolute; z-index: 0; bottom: 0;
+  left: calc(var(--vd-gutter) - .25 * var(--wl-mainw));
+  width: calc(1.5 * var(--wl-mainw));
+  height: 66%;
+  animation: vd-wl-planet 1.4s var(--vd-spring) both;
+}
+.vd-wl-globe-viz { position: absolute; inset: 0; }
+/* 地平线后面一层很淡的白光，让球冠边缘从网格里浮出来（不是蓝色铺底） */
+.vd-wl-globe::before {
+  content: ""; position: absolute; left: 12%; right: 12%; top: 22%; height: 46%; z-index: 0; pointer-events: none;
+  background: radial-gradient(50% 60% at 50% 70%, rgba(255, 255, 255, .9), rgba(255, 255, 255, 0) 72%);
+}
+:root[data-variant="d"][data-theme="dark"] .vd-wl-globe::before { background: radial-gradient(50% 60% at 50% 70%, rgb(var(--accent-rgb) / .1), transparent 72%); }
+.vd-wl-globe .vd-globe { z-index: 1; }
+@keyframes vd-wl-planet { from { transform: translateY(48px); opacity: .25; } }
+
+/* ───────── 主列 ───────── */
+
+.vd-wl-main {
+  position: relative; z-index: 2; grid-column: 1; grid-row: 1;
+  display: grid; grid-template-rows: minmax(0, .26fr) auto minmax(0, 1fr);
+  min-width: 0; min-height: 0;
+  pointer-events: none;
+}
+/* 问候区背后一块和画布同色的柔光「空地」：轨道弧和网格从文字后面淡出去，不和字抢 */
+.vd-wl-hero::before {
+  content: ""; position: absolute; z-index: -1; left: -14%; right: -14%; top: -18%; bottom: -10%; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--vd-bg) 88%, transparent) 55%, transparent);
+}
+.vd-wl-hero {
+  position: relative; isolation: isolate;
+  grid-row: 2; justify-self: center;
+  display: flex; flex-direction: column; align-items: center;
+  width: min(760px, 100%); min-width: 0;
+  text-align: center; pointer-events: auto;
+}
+.vd-wl-hero > * { animation: vd-wl-rise .72s var(--vd-spring) both; }
+.vd-wl-hero > :nth-child(2) { animation-delay: 50ms; }
+.vd-wl-hero > :nth-child(3) { animation-delay: 100ms; }
+.vd-wl-hero > :nth-child(4) { animation-delay: 150ms; }
+.vd-wl-hero > :nth-child(5) { animation-delay: 230ms; }
+@keyframes vd-wl-rise { from { opacity: 0; transform: translateY(10px); filter: blur(5px); } }
+
+.vd-wl-kicker {
+  display: inline-flex; align-items: center; gap: 10px; height: 28px; margin: 0 0 18px; padding: 0 13px 0 4px;
+  border: 1px solid var(--vd-line); border-radius: 999px;
+  background: color-mix(in srgb, var(--vd-panel) 76%, transparent);
+  box-shadow: var(--vd-hi), 0 1px 2px rgba(16, 24, 40, .04);
+  font-size: var(--vd-fs-12); line-height: 1; color: var(--vd-ink-2); white-space: nowrap;
+}
+.vd-wl-kicker-tag {
+  display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px;
+  background: var(--vd-ink-1); color: var(--vd-panel);
+  font-family: var(--vd-font-mono); font-size: var(--vd-fs-11); letter-spacing: .08em;
+}
+.vd-wl-title {
+  margin: 0; max-width: 18em;
+  font-family: var(--vd-font-display); font-size: var(--vd-fs-44); font-weight: 400; line-height: 1.16; letter-spacing: 0;
+  color: var(--vd-ink-1); text-wrap: balance;
+}
+.vd-wl-sub { margin: 10px 0 0; font-size: var(--vd-fs-14); line-height: 1.6; color: var(--vd-ink-2); }
+
+/* 问答框：背后一团很淡的极光（多色、面积小，不是浅蓝铺底），慢慢转 */
+.vd-wl-ask { position: relative; width: 100%; margin-top: 24px; }
+.vd-wl-ask::before {
+  content: ""; position: absolute; z-index: -1; left: 14%; right: 14%; top: 6px; height: 58px; border-radius: 50%;
+  background: conic-gradient(from var(--vd-angle), var(--vd-aurora-stops));
+  filter: blur(34px); opacity: .2;
+  animation: vd-wl-aurora 14s linear infinite;
+  pointer-events: none;
+}
+:root[data-variant="d"][data-theme="dark"] .vd-wl-ask::before { opacity: .32; }
+@keyframes vd-wl-aurora { to { --vd-angle: 360deg; } }
+.vd-wl-ask .vd-askbox { background: color-mix(in srgb, var(--vd-panel) 94%, transparent); }
+
+/* 快捷入口：一条分成三段的玻璃条，和建议问题的圆角标签区分开 */
+.vd-wl-quick {
+  display: inline-flex; align-items: stretch; margin-top: 18px; padding: 3px;
+  border: 1px solid var(--vd-line); border-radius: 12px;
+  background: color-mix(in srgb, var(--vd-panel) 66%, transparent);
+  box-shadow: var(--vd-hi), 0 1px 2px rgba(16, 24, 40, .04);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.vd-wl-quick-item {
+  position: relative; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px 0 6px;
+  border: 0; border-radius: 9px; background: transparent; color: var(--vd-ink-1);
+  font: inherit; font-size: var(--vd-fs-13); line-height: 1; white-space: nowrap; text-decoration: none; cursor: pointer;
+  transition: background var(--vd-t), box-shadow var(--vd-t), transform var(--vd-t) var(--vd-ease);
+}
+.vd-wl-quick-item + .vd-wl-quick-item { margin-left: 1px; }
+.vd-wl-quick-item + .vd-wl-quick-item::before { content: ""; position: absolute; left: -1px; top: 10px; bottom: 10px; width: 1px; background: var(--vd-line); transition: opacity var(--vd-t); }
+.vd-wl-quick-item:hover { background: var(--vd-panel); box-shadow: 0 0 0 1px var(--vd-line), 0 2px 6px -2px rgba(16, 24, 40, .1); }
+.vd-wl-quick-item:hover::before, .vd-wl-quick-item:hover + .vd-wl-quick-item::before { opacity: 0; }
+.vd-wl-quick-item:active { transform: scale(.98); }
+.vd-wl-quick-ic { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--vd-panel-3); color: var(--vd-ink-2); }
+.vd-wl-quick-meta { font-size: var(--vd-fs-12); color: var(--vd-ink-3); }
+.vd-wl-quick-item.is-gen .vd-wl-quick-ic { color: var(--accent); background: var(--vd-accent-wash); box-shadow: inset 0 0 0 1px rgb(var(--accent-rgb) / .16); }
+.vd-wl-quick-go { color: var(--vd-ink-3); transition: transform var(--vd-t) var(--vd-ease), color var(--vd-t); }
+.vd-wl-quick-item:hover .vd-wl-quick-go { color: var(--accent); transform: translateX(2px); }
+
+/* 轨道图例：主列左下，贴着地平线。和看板地球下方的图例同一写法：一条玻璃胶囊，等宽角标 + 型号色点 + 数值 */
+.vd-wl-legend {
+  position: absolute; left: 0; bottom: 0; z-index: 1;
+  display: flex; align-items: center; gap: 12px; max-width: 100%; height: 34px;
+  margin: 0; padding: 0 14px 0 12px; pointer-events: auto;
+  border: 1px solid var(--vd-line); border-radius: 999px;
+  background: color-mix(in srgb, var(--vd-panel) 78%, transparent);
+  box-shadow: var(--vd-hi), 0 1px 2px rgba(16, 24, 40, .05), 0 8px 20px -14px rgba(16, 24, 40, .3);
+  -webkit-backdrop-filter: blur(10px) saturate(140%); backdrop-filter: blur(10px) saturate(140%);
+  animation: vd-wl-rise .72s var(--vd-spring) .32s both;
+  white-space: nowrap;
+}
+.vd-wl-legend-h { flex: none; margin: 0; font-family: var(--vd-font-mono); font-size: var(--vd-fs-11); letter-spacing: .08em; color: var(--vd-ink-3); }
+.vd-wl-legend ul { display: flex; gap: 14px; margin: 0; padding: 0 0 0 12px; list-style: none; border-left: 1px solid var(--vd-line); }
+.vd-wl-legend li { display: inline-flex; align-items: center; gap: 6px; font-size: var(--vd-fs-12); line-height: 1; color: var(--vd-ink-2); }
+.vd-wl-legend li i { width: 7px; height: 7px; border-radius: 50%; box-shadow: 0 0 0 2px var(--vd-panel), 0 0 0 3px var(--vd-line-strong); }
+.vd-wl-legend li b { font-weight: 500; color: var(--vd-ink-1); font-variant-numeric: tabular-nums; }
+.vd-wl-legend li span { font-variant-numeric: tabular-nums; }
+.vd-wl-legend-hint { flex: none; margin: 0; padding-left: 12px; border-left: 1px solid var(--vd-line); font-size: var(--vd-fs-11); color: var(--vd-ink-3); }
+@media (max-width: 1439px) { .vd-wl-legend-hint { display: none; } }
+
+/* ───────── 右窄栏 ───────── */
+
+.vd-wl-aside {
+  position: relative; z-index: 2; grid-column: 2; grid-row: 1;
+  display: flex; flex-direction: column; gap: var(--wl-gap);
+  min-width: 0; min-height: 0;
+}
+.vd-wl-aside > * { animation: vd-wl-rise .72s var(--vd-spring) both; }
+.vd-wl-aside > :nth-child(1) { animation-delay: 120ms; }
+.vd-wl-aside > :nth-child(2) { animation-delay: 200ms; }
+
+/* 卡片：和 .vd-panel 同一套表面（白底 + 1px 描边 + 分层阴影 + 顶部内高光） */
+.vd-wl-card {
+  position: relative; display: flex; flex-direction: column; min-height: 0;
+  background: var(--vd-panel); border: 1px solid var(--vd-line); border-radius: var(--vd-radius);
+  box-shadow: var(--vd-shadow), var(--vd-hi);
+}
+/* 表头同面板：一行，中文标题 13px + 等宽角标；不画分隔线，靠留白分层 */
+.vd-wl-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 44px; padding: 4px 10px 0 var(--vd-pad); flex: none; }
+.vd-wl-card-title { display: inline-flex; align-items: baseline; gap: 8px; margin: 0; font-size: var(--vd-fs-13); font-weight: 500; color: var(--vd-ink-1); }
+.vd-wl-card-title .vd-kicker { margin: 0; }
+.vd-wl-card-note { font-size: var(--vd-fs-11); color: var(--vd-ink-3); padding-right: 6px; white-space: nowrap; }
+.vd-wl-card-more { display: inline-flex; align-items: center; gap: 2px; height: 26px; padding: 0 6px 0 8px; border-radius: 6px; font-size: var(--vd-fs-12); color: var(--vd-ink-3); text-decoration: none; transition: background var(--vd-t), color var(--vd-t); }
+.vd-wl-card-more:hover { background: var(--vd-panel-2); color: var(--vd-ink-1); }
+
+/* 分段切换：最近看板 / 收藏（ui.css 的 .vd-seg.is-sm），这里只做对齐 */
+.vd-wl-tabs { margin-left: -8px; }
+
+.vd-wl-shelf { flex: none; }
+.vd-wl-list { margin: 0; padding: 6px; list-style: none; }
+.vd-wl-list li { animation: vd-wl-in .36s var(--vd-ease) both; animation-delay: calc(var(--i) * 40ms); }
+@keyframes vd-wl-in { from { opacity: 0; transform: translateY(3px); } }
+.vd-wl-row {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px;
+  height: 44px; padding: 0 10px 0 8px; border-radius: 8px;
+  color: var(--vd-ink-1); text-decoration: none;
+  transition: background var(--vd-t), transform var(--vd-t) var(--vd-ease);
+}
+.vd-wl-row:hover { background: var(--vd-panel-2); }
+.vd-wl-row:active { transform: scale(.99); }
+.vd-wl-row-spark { display: grid; place-items: center; width: 52px; height: 30px; border-radius: 7px; background: var(--vd-panel-2); box-shadow: inset 0 0 0 1px var(--vd-line); }
+.vd-wl-row-ic { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 7px; background: var(--vd-panel-2); color: var(--vd-ink-2); box-shadow: inset 0 0 0 1px var(--vd-line); }
+.vd-wl-row-main { display: grid; min-width: 0; gap: 1px; }
+.vd-wl-row-main b { font-size: var(--vd-fs-13); font-weight: 500; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vd-wl-row-main small { font-size: var(--vd-fs-11); line-height: 1.3; color: var(--vd-ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.vd-wl-row-go { color: var(--vd-ink-3); opacity: 0; transform: translateX(-3px); transition: opacity var(--vd-t), transform var(--vd-t) var(--vd-ease); }
+.vd-wl-row:hover .vd-wl-row-go, .vd-wl-row:focus-visible .vd-wl-row-go { opacity: 1; transform: none; }
+.vd-wl-row-val { font-family: var(--vd-font-display); font-size: var(--vd-fs-14); color: var(--vd-ink-1); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 今日要点 */
+.vd-wl-tips { flex: 1 1 auto; min-height: 0; }
+.vd-wl-tip-list { flex: 1 1 auto; min-height: 0; margin: 0; padding: 6px; list-style: none; overflow-y: auto; }
+.vd-wl-tip-list li { animation: vd-wl-in .36s var(--vd-ease) both; animation-delay: calc(240ms + var(--i) * 50ms); }
+.vd-wl-tip {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; width: 100%;
+  padding: 10px 10px 10px 8px; border: 0; border-radius: 8px; background: transparent;
+  font: inherit; text-align: left; color: var(--vd-ink-1); cursor: pointer;
+  transition: background var(--vd-t), transform var(--vd-t) var(--vd-ease);
+}
+.vd-wl-tip:hover { background: var(--vd-panel-2); }
+.vd-wl-tip:active { transform: scale(.99); }
+.vd-wl-tip-n { padding-top: 2px; font-family: var(--vd-font-mono); font-size: var(--vd-fs-11); letter-spacing: .04em; color: var(--vd-ink-3); }
+.vd-wl-tip-body { display: grid; gap: 7px; min-width: 0; }
+.vd-wl-tip-title { font-size: var(--vd-fs-13); line-height: 1.5; color: var(--vd-ink-2); }
+.vd-wl-tip-title b { font-weight: 500; color: var(--vd-ink-1); }
+.vd-wl-tip-title em { font-style: normal; font-weight: 500; color: var(--vd-ink-1); font-variant-numeric: tabular-nums; }
+.vd-wl-tip-bar { display: block; height: 3px; border-radius: 2px; background: var(--vd-track); overflow: hidden; }
+.vd-wl-tip-bar i { display: block; height: 100%; border-radius: 2px; transform-origin: 0 50%; animation: vd-wl-grow .9s var(--vd-spring) both; animation-delay: calc(360ms + var(--i, 0) * 60ms); }
+@keyframes vd-wl-grow { from { transform: scaleX(0); } }
+.vd-wl-tip-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: var(--vd-fs-11); color: var(--vd-ink-3); font-variant-numeric: tabular-nums; }
+.vd-wl-tip-ask { display: inline-flex; align-items: center; gap: 2px; color: var(--vd-accent-ink); opacity: 0; transform: translateX(-3px); transition: opacity var(--vd-t), transform var(--vd-t) var(--vd-ease); }
+.vd-wl-tip-ask .vd-ic { width: 14px; height: 14px; }
+.vd-wl-tip:hover .vd-wl-tip-ask, .vd-wl-tip:focus-visible .vd-wl-tip-ask { opacity: 1; transform: none; }
+.vd-wl-empty { flex: 1 1 auto; }
+
+/* ───────── 地平线上的指标条 ───────── */
+
+.vd-wl-metrics {
+  position: relative; z-index: 3; grid-column: 1 / -1; grid-row: 2;
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  border: 1px solid var(--vd-line); border-radius: var(--vd-radius-lg);
+  background: color-mix(in srgb, var(--vd-panel) 74%, transparent);
+  box-shadow: var(--vd-shadow), var(--vd-hi);
+  -webkit-backdrop-filter: blur(14px) saturate(150%); backdrop-filter: blur(14px) saturate(150%);
+  animation: vd-wl-rise .8s var(--vd-spring) .16s both;
+}
+:root[data-variant="d"][data-theme="dark"] .vd-wl-metrics { background: color-mix(in srgb, var(--vd-panel) 80%, transparent); }
+/* 仪器描角：和看板地球取景窗同一套（12px、1.5px、圆角 4、墨色 3 级半透明），常显 */
+.vd-wl-hud { position: absolute; inset: 7px; pointer-events: none; }
+.vd-wl-hud i { position: absolute; width: 12px; height: 12px; border: 0 solid color-mix(in srgb, var(--vd-ink-3) 50%, transparent); }
+.vd-wl-hud i:nth-child(1) { top: 0; left: 0; border-top-width: 1.5px; border-left-width: 1.5px; border-top-left-radius: 4px; }
+.vd-wl-hud i:nth-child(2) { top: 0; right: 0; border-top-width: 1.5px; border-right-width: 1.5px; border-top-right-radius: 4px; }
+.vd-wl-hud i:nth-child(3) { bottom: 0; left: 0; border-bottom-width: 1.5px; border-left-width: 1.5px; border-bottom-left-radius: 4px; }
+.vd-wl-hud i:nth-child(4) { bottom: 0; right: 0; border-bottom-width: 1.5px; border-right-width: 1.5px; border-bottom-right-radius: 4px; }
+
+.vd-wl-metric { position: relative; display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 16px 20px 14px 22px; }
+.vd-wl-metric + .vd-wl-metric::before { content: ""; position: absolute; left: 0; top: 18px; bottom: 18px; width: 1px; background: var(--vd-line); }
+.vd-wl-metric-n { position: absolute; top: 17px; right: 18px; font-family: var(--vd-font-mono); font-size: var(--vd-fs-11); letter-spacing: .06em; color: var(--vd-ink-3); opacity: .8; }
+.vd-wl-metric .vd-big-label { padding-right: 24px; }
+.vd-wl-metric:first-of-type .vd-big-label::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 1px 0; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px rgb(var(--accent-rgb) / .14); vertical-align: middle; }
+.vd-wl-metric-foot { display: flex; align-items: center; gap: 10px; min-width: 0; margin: 0; height: 18px; font-size: var(--vd-fs-12); line-height: 1; color: var(--vd-ink-3); white-space: nowrap; }
+.vd-wl-metric-viz { display: inline-flex; align-items: center; flex: none; width: 64px; }
+.vd-wl-metric-note { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.vd-wl-meter { position: relative; display: block; width: 64px; height: 4px; border-radius: 2px; background: var(--vd-track); overflow: hidden; }
+.vd-wl-meter i { position: absolute; inset: 0; border-radius: 2px; background: var(--accent); transform-origin: 0 50%; animation: vd-wl-grow 1.1s var(--vd-spring) .4s both; }
+
+/* ───────── 关闭特效：停在终态 ───────── */
+
+:root[data-variant="d"][data-fx="off"] .vd-wl-globe,
+:root[data-variant="d"][data-fx="off"] .vd-wl-hero > *,
+:root[data-variant="d"][data-fx="off"] .vd-wl-legend,
+:root[data-variant="d"][data-fx="off"] .vd-wl-aside > *,
+:root[data-variant="d"][data-fx="off"] .vd-wl-list li,
+:root[data-variant="d"][data-fx="off"] .vd-wl-tip-list li,
+:root[data-variant="d"][data-fx="off"] .vd-wl-tip-bar i,
+:root[data-variant="d"][data-fx="off"] .vd-wl-meter i,
+:root[data-variant="d"][data-fx="off"] .vd-wl-metrics { animation: none; }
+:root[data-variant="d"][data-fx="off"] .vd-wl-ask::before { animation: none; --vd-angle: 135deg; }
+:root[data-variant="d"][data-fx="subtle"] .vd-wl-ask::before { animation-duration: 28s; }
+
+/* ───────── 尺寸适配 ───────── */
+
+/* 第 4 条要点只在高屏显示 */
+@media (max-height: 819px) {
+  .vd-wl-tip-list li:nth-child(n + 4) { display: none; }
+}
+/* 矮屏（1280×720 一类）：问候区收紧 */
+@media (min-width: 1024px) and (max-height: 760px) {
+  .vd-wl-kicker { margin-bottom: 12px; }
+  .vd-wl-sub { margin-top: 6px; }
+  .vd-wl-ask { margin-top: 16px; }
+  .vd-wl-quick { margin-top: 12px; }
+  .vd-wl .vd-ask-note { margin-top: 8px; }
+  .vd-wl .vd-suggest { margin-top: 10px; }
+  .vd-wl-metric { padding-top: 13px; padding-bottom: 12px; gap: 8px; }
+  .vd-wl-metric-n { top: 14px; }
+  .vd-wl-row { height: 40px; }
+  .vd-wl-list { padding: 4px 6px; }
+  .vd-wl-tip-list { padding: 4px 6px; }
+  .vd-wl-tip { padding: 7px 8px 8px 6px; }
+  .vd-wl-tip-body { gap: 6px; }
+  .vd-wl-tip-meta { display: none; }
+  .vd-wl-legend-hint { display: none; }
+}
+/* 宽 1024–1279：指标数字降一档 */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .vd-wl-metric .vd-big.is-lg .vd-big-value { font-size: var(--vd-fs-28); }
+  .vd-wl-metric { padding-left: 16px; padding-right: 14px; }
+  .vd-wl-legend { display: none; }
+}
+/* 高屏：问候区更舒展，要点之间多留白，底部加一行出处 */
+.vd-wl-tips-foot { display: none; }
+@media (min-height: 980px) {
+  .vd-wl-ask { margin-top: 30px; }
+  .vd-wl-tip { padding-top: 14px; padding-bottom: 14px; }
+  .vd-wl-tip-body { gap: 9px; }
+  .vd-wl-tips-foot {
+    display: flex; justify-content: space-between; gap: 8px; flex: none; margin: 0; padding: 10px var(--vd-pad) 12px;
+    border-top: 1px solid var(--vd-line); font-size: var(--vd-fs-11); color: var(--vd-ink-3); font-variant-numeric: tabular-nums;
+  }
+}
+
+/* 窄屏：整页纵向滚动，依次堆叠 */
+@media (max-width: 1023px) {
+  .vd-wl { display: flex; flex-direction: column; gap: 16px; overflow: hidden; padding-top: 28px; }
+  .vd-wl-main { display: block; pointer-events: auto; }
+  .vd-wl-hero { width: 100%; }
+  .vd-wl-title { font-size: var(--vd-fs-28); }
+  .vd-wl-quick { flex-wrap: wrap; justify-content: center; }
+  .vd-wl-legend { position: static; flex-wrap: wrap; justify-content: center; height: auto; margin-top: 20px; padding: 8px 12px; border-radius: 12px; white-space: normal; }
+  .vd-wl-legend ul { flex-wrap: wrap; justify-content: center; gap: 4px 12px; padding: 0; border: 0; }
+  .vd-wl-globe { position: relative; order: 2; left: auto; width: auto; height: 240px; margin: -24px calc(-1 * var(--vd-gutter)) -88px; }
+  .vd-wl-metrics { order: 3; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .vd-wl-metric:nth-of-type(odd)::before { display: none; }
+  .vd-wl-metric:nth-of-type(n + 3) { border-top: 1px solid var(--vd-line); }
+  .vd-wl-metric .vd-big.is-lg .vd-big-value { font-size: var(--vd-fs-28); }
+  .vd-wl-aside { order: 4; }
+  .vd-wl-tips { flex: none; }
+}
+@media (max-width: 520px) {
+  .vd-wl-quick { display: grid; width: 100%; }
+  .vd-wl-quick-item + .vd-wl-quick-item::before { left: 10px; right: 10px; top: -1px; bottom: auto; width: auto; height: 1px; }
+  .vd-wl-legend ul { gap: 4px 10px; }
+}
