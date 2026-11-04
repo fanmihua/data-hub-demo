@@ -22,7 +22,8 @@ function Shell() {
   const { config, setConfig, data } = useSite();
   const route = useRoute(config.variant);
 
-  useEffect(() => { if (!/^#\/[abcd]/.test(location.hash)) navigate(href(config.variant)); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // 不带方案的地址（比如直接分享的根链接）一律打开列表里的第一个方案（D）；带了 #/a 之类的按地址走
+  useEffect(() => { if (!/^#\/[abcd]/.test(location.hash)) navigate(href(VARIANTS[0].id)); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (route.variant !== config.variant) setConfig({ variant: route.variant }); }, [route.variant]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior }); }, [route.variant, route.page, route.assetId]);
   useEffect(() => {
