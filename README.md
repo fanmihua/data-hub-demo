@@ -1,6 +1,6 @@
 # Data Hub · 视觉方案
 
-航天数据资产门户的四个视觉方案，可以在页面底部的切换条里来回切换。打开后默认是方案 D「数据舱」。
+航天数据资产门户的四个视觉方案，可以在页面底部的切换条里来回切换。打开后默认是方案 D「数据舱」的暗色模式，左下角可以切到浅色。
 
 在线体验：<https://fanmihua.github.io/data-hub-demo/>
 
@@ -28,7 +28,7 @@
 
 - 「风格与数据」面板（底部切换条和 D 的左侧栏都能打开）可以切换明暗、主题色、动效强度、密度，也能直接粘贴或导入自己的数据 JSON。改动只保存在你自己的浏览器里。
 - 默认值在 `public/config/theme.json`（风格）和 `public/config/data.json`（数据，金额单位为元）。
-- 只对当前页面生效的测试参数：`?theme=dark`、`?fx=off`、`?accent=signal-green`（也可以写 6 位色值，如 `?accent=0B8A9E`）。例如 `#/d?theme=dark`。
+- 只对当前页面生效的测试参数：`?theme=light`、`?fx=off`、`?accent=signal-green`（也可以写 6 位色值，如 `?accent=0B8A9E`）。例如 `#/d?theme=light`。
 
 ## 本地运行
 

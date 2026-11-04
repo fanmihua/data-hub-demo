@@ -40,12 +40,13 @@ export const VARIANTS: { id: VariantId; name: string; short: string; tagline: st
   { id: 'c', name: '轨道叙事', short: 'C', tagline: '滚动讲完一年的经费流向，大字、大数和轨道动画', defaultAccent: 'ignition-orange' },
 ];
 
-export const DEFAULT_CONFIG: SiteConfig = { variant: 'd', mode: 'light', accent: 'auto', fx: 'full', density: 'comfortable' };
+/** 默认：方案 D、暗色。public/config/theme.json 可以覆盖 */
+export const DEFAULT_CONFIG: SiteConfig = { variant: 'd', mode: 'dark', accent: 'auto', fx: 'full', density: 'comfortable' };
 
 export function normalizeConfig(input: Partial<SiteConfig> | null | undefined): SiteConfig {
   const c = { ...DEFAULT_CONFIG, ...(input ?? {}) };
   if (!['a', 'b', 'c', 'd'].includes(c.variant)) c.variant = 'd';
-  if (!['light', 'dark', 'system'].includes(c.mode)) c.mode = 'light';
+  if (!['light', 'dark', 'system'].includes(c.mode)) c.mode = DEFAULT_CONFIG.mode;
   if (!['full', 'subtle', 'off'].includes(c.fx)) c.fx = 'full';
   if (!['comfortable', 'compact'].includes(c.density)) c.density = 'comfortable';
   if (typeof c.accent !== 'string' || !(c.accent === 'auto' || /^#[0-9a-f]{6}$/i.test(c.accent) || ACCENTS.some(a => a.id === c.accent))) c.accent = 'auto';

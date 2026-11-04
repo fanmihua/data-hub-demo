@@ -1,9 +1,11 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f4f5f7" />
+    <meta name="theme-color" content="#0b0d12" />
+    <!-- 默认暗色：脚本加载前先按暗色铺底，避免白屏闪一下；用户切到浅色后这条规则不再生效 -->
+    <style>html[data-theme="dark"] { background: #0b0d12; color-scheme: dark; }</style>
     <title>Data Hub · 视觉方案</title>
     <meta name="description" content="航天数据资产门户的四个视觉方案：一屏式 AI Chat BI 数据舱、白昼测控、极光智能、轨道叙事。全部为演示数据。" />
     <meta property="og:type" content="website" />
