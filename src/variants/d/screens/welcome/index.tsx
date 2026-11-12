@@ -10,14 +10,14 @@ import type { BoardId, CatalogItem } from '../../model/types';
 import { AskBox } from '../../ui/AskBox';
 import { BigNumber } from '../../ui/BigNumber';
 import { Sparkline } from '../../ui/Sparkline';
-import { IconArrowRight, IconArrowUpRight, IconAssets, IconBoard, IconClock, IconInbox, IconMetric, IconSparkle, IconStar, IconTable } from '../../ui/icons';
+import { IconArrowRight, IconArrowUpRight, IconClock, IconInbox, IconMetric, IconSparkle, IconStar, IconTable } from '../../ui/icons';
 import { dHref, useModelColor } from '../../ui/lib';
 import { Globe, type Satellite } from '../../viz';
 import './welcome.css';
 
 /**
  * 欢迎页 #/d（规范第 4.3 节）。一屏：
- *   ┌ 问候 + 大号问答框 + 建议问题 + 快捷入口 ┐┌ 右窄栏：最近看板 / 收藏、今日要点 ┐
+ *   ┌ 问候 + 大号问答框 + 一排建议问题 ┐┌ 右窄栏：最近看板 / 收藏、今日要点 ┐
  *   │            （地平线上的轨道弧）          │└──────────────────────────────────┘
  *   └ 地平线上的一排 5 个大指标（玻璃条，横跨整屏）───────────────────────────────┘
  *   背景：点阵大地球只露上半，像一道地平线，中心对准左侧主列。
@@ -67,8 +67,6 @@ export default function WelcomeScreen({ route: _route }: { route: Route }) {
   const low = d.models.length > 1 ? [...d.models].sort((a, b) => a.completion - b.completion)[0] : null;
   const buildQ = low ? `${low.id} 为什么完成率最低` : questions[0] ?? '年度目标完成了多少';
   const boards = catalog.filter(i => i.kind === 'board' && i.status === 'ready');
-  const recentBoard = boards.find(b => b.boardId === 'operations') ?? boards[0];
-  const readyCount = catalog.filter(i => i.status === 'ready').length;
 
   return (
     <div className="vd-screen vd-wl">
@@ -78,34 +76,20 @@ export default function WelcomeScreen({ route: _route }: { route: Route }) {
 
       <section className="vd-wl-main" aria-labelledby="vd-wl-title">
         <div className="vd-wl-hero">
-          <p className="vd-wl-kicker">
-            <span className="vd-wl-kicker-tag">DATA HUB</span>
-            <span>{data.meta.org} · {data.meta.fiscalYear} 年度经营与支出</span>
-          </p>
           <h1 id="vd-wl-title" className="vd-wl-title">{greeting()}，今天想看哪块数据？</h1>
-          <p className="vd-wl-sub">问一句，或者从资产里挑一张看板。数字全部来自演示数据。</p>
+          <p className="vd-wl-sub">数字来自演示数据，问答按关键词匹配，不是 AI 生成</p>
           <div className="vd-wl-ask">
-            <AskBox size="hero" suggestions={questions} onSubmit={q => ask(q)} />
+            <AskBox
+              size="hero"
+              suggestions={questions}
+              onSubmit={q => ask(q)}
+              extra={(
+                <button type="button" className="vd-wl-gen" onClick={() => ask(buildQ, { build: '1' })}>
+                  <IconSparkle />用问答生成看板<IconArrowRight className="vd-wl-gen-go" />
+                </button>
+              )}
+            />
           </div>
-          <nav className="vd-wl-quick" aria-label="快捷入口">
-            <a className="vd-wl-quick-item" href={dHref('assets')}>
-              <span className="vd-wl-quick-ic"><IconAssets /></span>
-              <span className="vd-wl-quick-text">浏览资产</span>
-              <span className="vd-wl-quick-meta">{readyCount} 项</span>
-            </a>
-            {recentBoard?.boardId && (
-              <a className="vd-wl-quick-item" href={dHref('board', recentBoard.boardId)}>
-                <span className="vd-wl-quick-ic"><IconBoard /></span>
-                <span className="vd-wl-quick-text">打开最近看板</span>
-                <span className="vd-wl-quick-meta">{recentBoard.name}</span>
-              </a>
-            )}
-            <button type="button" className="vd-wl-quick-item is-gen" onClick={() => ask(buildQ, { build: '1' })}>
-              <span className="vd-wl-quick-ic"><IconSparkle /></span>
-              <span className="vd-wl-quick-text">用问答生成看板</span>
-              <IconArrowRight className="vd-wl-quick-go" />
-            </button>
-          </nav>
         </div>
         <OrbitLegend />
       </section>
@@ -150,10 +134,8 @@ function Metrics() {
   ];
   return (
     <section className="vd-wl-metrics" aria-label="关键指标">
-      <span className="vd-wl-hud" aria-hidden="true"><i /><i /><i /><i /></span>
       {items.map((m, i) => (
         <div key={m.key} className="vd-wl-metric" style={{ '--i': i } as CSSProperties}>
-          <span className="vd-wl-metric-n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
           <BigNumber label={m.label} value={m.value} format={m.format} unit={m.unit} size="lg" />
           <p className="vd-wl-metric-foot">
             <span className="vd-wl-metric-viz" aria-hidden="true">{m.viz}</span>
@@ -182,7 +164,6 @@ function OrbitLegend() {
   if (!d.models.length) return null;
   return (
     <div className="vd-wl-legend">
-      <p className="vd-wl-legend-h" aria-hidden="true">ORBITS · {String(d.models.length).padStart(2, '0')}</p>
       <ul aria-label="型号轨道：卫星大小按收入">
         {d.models.map(m => (
           <li key={m.id}>
@@ -192,7 +173,6 @@ function OrbitLegend() {
           </li>
         ))}
       </ul>
-      <p className="vd-wl-legend-hint">卫星大小按收入 · 拖动地球可旋转</p>
     </div>
   );
 }

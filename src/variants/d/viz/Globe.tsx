@@ -292,13 +292,14 @@ export function Globe({ mode, satellites, selected = null, onSelect, className =
       ctx.beginPath(); ctx.arc(cx, cy, R + 0.5, Math.PI * 1.18, Math.PI * 1.82); ctx.stroke();
     }
 
-    // 经纬网（随地球自转）
+    // 经纬网（随地球自转）。horizon 是欢迎页的大背景，不画经纬网、背面轨道和测控链路，只留点阵、轨道和卫星，画面干净
+    const hz = md === 'horizon';
     const yaw = s.spin + camYaw;
     ctx.lineWidth = 1;
     ctx.strokeStyle = rgba(ink, dark ? 0.08 : 0.055);
     ctx.beginPath();
     const gp = (lon: number, lat: number) => rotate(lonLatToXyz(lon, lat), yaw, pitch);
-    for (let lon = -180; lon < 180; lon += 30) {
+    if (!hz) for (let lon = -180; lon < 180; lon += 30) {
       let pen = false;
       for (let lat = -84; lat <= 84; lat += 6) {
         const q = gp(lon, lat);
@@ -307,7 +308,7 @@ export function Globe({ mode, satellites, selected = null, onSelect, className =
         if (pen) ctx.lineTo(x, y); else { ctx.moveTo(x, y); pen = true; }
       }
     }
-    for (let lat = -60; lat <= 60; lat += 30) {
+    if (!hz) for (let lat = -60; lat <= 60; lat += 30) {
       let pen = false;
       for (let lon = -180; lon <= 180; lon += 5) {
         const q = gp(lon, lat);
@@ -320,7 +321,7 @@ export function Globe({ mode, satellites, selected = null, onSelect, className =
 
     // 背面轨道（虚线，压在球面上很淡）
     ctx.setLineDash([2, 5]);
-    os.forEach((o, i) => {
+    if (!hz) os.forEach((o, i) => {
       const col = pal.sats.get(o.id) ?? pal.accent;
       const dim = active && active !== o.id;
       ctx.strokeStyle = rgba(col, dim ? 0.05 : 0.16);
@@ -362,7 +363,7 @@ export function Globe({ mode, satellites, selected = null, onSelect, className =
 
     // 测控站（北京）
     const stq = rotate(STATION, yaw, pitch);
-    const station = { x: cx + stq[0] * R, y: cy - stq[1] * R, front: stq[2] > 0.06 && cy - stq[1] * R < h - 4 };
+    const station = { x: cx + stq[0] * R, y: cy - stq[1] * R, front: !hz && stq[2] > 0.06 && cy - stq[1] * R < h - 4 };
 
     // 前半轨道、尾迹、卫星
     const sats: SatScreen[] = [];
@@ -372,7 +373,7 @@ export function Globe({ mode, satellites, selected = null, onSelect, className =
       const on = active === o.id;
       const dim = !!active && !on;
       ctx.lineWidth = on ? 1.5 : 1;
-      ctx.strokeStyle = rgba(col, dim ? 0.12 : on ? 0.85 : 0.4);
+      ctx.strokeStyle = rgba(col, dim ? 0.12 : on ? 0.85 : hz ? 0.16 : 0.4);
       ctx.stroke(paths[i].front);
 
       const ph = (s.phases.get(o.id) ?? 0) + s.t * o.speed;

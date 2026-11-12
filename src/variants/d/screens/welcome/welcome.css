@@ -1,6 +1,6 @@
 /*
  * 方案 D · 欢迎页 #/d。一屏网格：
- *   列：主列（问候 + 问答框 + 快捷入口）│ 右窄栏（最近看板 / 收藏、今日要点）
+ *   列：主列（问候 + 问答框 + 一排建议问题）│ 右窄栏（最近看板 / 收藏、今日要点）
  *   行：上方内容 │ 地平线上的指标条（横跨两列）
  * 地球层 .vd-wl-globe 绝对定位在最底层：宽为主列的 1.5 倍、中心对准主列，底边贴到屏幕底（方案切换条下方），
  * 高度取屏幕的 66%，球冠顶点刚好从指标条上方探出来，轨道弧越过地平线。
@@ -18,6 +18,9 @@
   gap: var(--wl-gap);
   overflow: hidden;
 }
+
+/* 主页不画工作区的蓝图网格和十字刻度：背景只留地球和顶部的光，线条少一层 */
+.vd-app.is-home .vd-work-grid { display: none; }
 
 /* ───────── 地平线地球 ───────── */
 
@@ -42,7 +45,7 @@
 
 .vd-wl-main {
   position: relative; z-index: 2; grid-column: 1; grid-row: 1;
-  display: grid; grid-template-rows: minmax(0, .26fr) auto minmax(0, 1fr);
+  display: grid; grid-template-rows: minmax(0, .5fr) auto minmax(0, 1fr);
   min-width: 0; min-height: 0;
   pointer-events: none;
 }
@@ -65,24 +68,12 @@
 .vd-wl-hero > :nth-child(5) { animation-delay: 230ms; }
 @keyframes vd-wl-rise { from { opacity: 0; transform: translateY(10px); filter: blur(5px); } }
 
-.vd-wl-kicker {
-  display: inline-flex; align-items: center; gap: 10px; height: 28px; margin: 0 0 18px; padding: 0 13px 0 4px;
-  border: 1px solid var(--vd-line); border-radius: 999px;
-  background: color-mix(in srgb, var(--vd-panel) 76%, transparent);
-  box-shadow: var(--vd-hi), 0 1px 2px rgba(16, 24, 40, .04);
-  font-size: var(--vd-fs-12); line-height: 1; color: var(--vd-ink-2); white-space: nowrap;
-}
-.vd-wl-kicker-tag {
-  display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px;
-  background: var(--vd-ink-1); color: var(--vd-panel);
-  font-family: var(--vd-font-mono); font-size: var(--vd-fs-11); letter-spacing: .08em;
-}
 .vd-wl-title {
   margin: 0; max-width: 18em;
   font-family: var(--vd-font-display); font-size: var(--vd-fs-44); font-weight: 400; line-height: 1.16; letter-spacing: 0;
   color: var(--vd-ink-1); text-wrap: balance;
 }
-.vd-wl-sub { margin: 10px 0 0; font-size: var(--vd-fs-14); line-height: 1.6; color: var(--vd-ink-2); }
+.vd-wl-sub { margin: 12px 0 0; font-size: var(--vd-fs-13); line-height: 1.6; color: var(--vd-ink-3); }
 
 /* 问答框：背后一团很淡的极光（多色、面积小，不是浅蓝铺底），慢慢转 */
 .vd-wl-ask { position: relative; width: 100%; margin-top: 24px; }
@@ -97,36 +88,24 @@
 @keyframes vd-wl-aurora { to { --vd-angle: 360deg; } }
 .vd-wl-ask .vd-askbox { background: color-mix(in srgb, var(--vd-panel) 94%, transparent); }
 
-/* 快捷入口：一条分成三段的玻璃条，和建议问题的圆角标签区分开 */
-.vd-wl-quick {
-  display: inline-flex; align-items: stretch; margin-top: 18px; padding: 3px;
-  border: 1px solid var(--vd-line); border-radius: 12px;
-  background: color-mix(in srgb, var(--vd-panel) 66%, transparent);
-  box-shadow: var(--vd-hi), 0 1px 2px rgba(16, 24, 40, .04);
-  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+/* 「用问答生成看板」：接在建议问题那一排最后，主色淡底、不描边，和问题标签区分开 */
+.vd-wl-gen {
+  display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px 0 11px;
+  border: 0; border-radius: 999px; background: var(--vd-accent-wash); color: var(--vd-accent-ink);
+  font: inherit; font-size: var(--vd-fs-13); line-height: 1; white-space: nowrap; cursor: pointer;
+  transition: background var(--vd-t), transform var(--vd-t) var(--vd-ease);
 }
-.vd-wl-quick-item {
-  position: relative; display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px 0 6px;
-  border: 0; border-radius: 9px; background: transparent; color: var(--vd-ink-1);
-  font: inherit; font-size: var(--vd-fs-13); line-height: 1; white-space: nowrap; text-decoration: none; cursor: pointer;
-  transition: background var(--vd-t), box-shadow var(--vd-t), transform var(--vd-t) var(--vd-ease);
-}
-.vd-wl-quick-item + .vd-wl-quick-item { margin-left: 1px; }
-.vd-wl-quick-item + .vd-wl-quick-item::before { content: ""; position: absolute; left: -1px; top: 10px; bottom: 10px; width: 1px; background: var(--vd-line); transition: opacity var(--vd-t); }
-.vd-wl-quick-item:hover { background: var(--vd-panel); box-shadow: 0 0 0 1px var(--vd-line), 0 2px 6px -2px rgba(16, 24, 40, .1); }
-.vd-wl-quick-item:hover::before, .vd-wl-quick-item:hover + .vd-wl-quick-item::before { opacity: 0; }
-.vd-wl-quick-item:active { transform: scale(.98); }
-.vd-wl-quick-ic { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--vd-panel-3); color: var(--vd-ink-2); }
-.vd-wl-quick-meta { font-size: var(--vd-fs-12); color: var(--vd-ink-3); }
-.vd-wl-quick-item.is-gen .vd-wl-quick-ic { color: var(--accent); background: var(--vd-accent-wash); box-shadow: inset 0 0 0 1px rgb(var(--accent-rgb) / .16); }
-.vd-wl-quick-go { color: var(--vd-ink-3); transition: transform var(--vd-t) var(--vd-ease), color var(--vd-t); }
-.vd-wl-quick-item:hover .vd-wl-quick-go { color: var(--accent); transform: translateX(2px); }
+.vd-wl-gen .vd-ic { width: 14px; height: 14px; flex: none; }
+.vd-wl-gen:hover { background: rgb(var(--accent-rgb) / .18); }
+.vd-wl-gen:active { transform: scale(.98); }
+.vd-wl-gen-go { transition: transform var(--vd-t) var(--vd-ease); }
+.vd-wl-gen:hover .vd-wl-gen-go { transform: translateX(2px); }
 
-/* 轨道图例：主列左下，贴着地平线。和看板地球下方的图例同一写法：一条玻璃胶囊，等宽角标 + 型号色点 + 数值 */
+/* 轨道图例：主列左下，贴着地平线。一条玻璃胶囊：型号色点 + 数值，不加角标和分隔线 */
 .vd-wl-legend {
   position: absolute; left: 0; bottom: 0; z-index: 1;
-  display: flex; align-items: center; gap: 12px; max-width: 100%; height: 34px;
-  margin: 0; padding: 0 14px 0 12px; pointer-events: auto;
+  display: flex; align-items: center; max-width: 100%; height: 34px;
+  margin: 0; padding: 0 14px; pointer-events: auto;
   border: 1px solid var(--vd-line); border-radius: 999px;
   background: color-mix(in srgb, var(--vd-panel) 78%, transparent);
   box-shadow: var(--vd-hi), 0 1px 2px rgba(16, 24, 40, .05), 0 8px 20px -14px rgba(16, 24, 40, .3);
@@ -134,14 +113,11 @@
   animation: vd-wl-rise .72s var(--vd-spring) .32s both;
   white-space: nowrap;
 }
-.vd-wl-legend-h { flex: none; margin: 0; font-family: var(--vd-font-mono); font-size: var(--vd-fs-11); letter-spacing: .08em; color: var(--vd-ink-3); }
-.vd-wl-legend ul { display: flex; gap: 14px; margin: 0; padding: 0 0 0 12px; list-style: none; border-left: 1px solid var(--vd-line); }
+.vd-wl-legend ul { display: flex; gap: 14px; margin: 0; padding: 0; list-style: none; }
 .vd-wl-legend li { display: inline-flex; align-items: center; gap: 6px; font-size: var(--vd-fs-12); line-height: 1; color: var(--vd-ink-2); }
 .vd-wl-legend li i { width: 7px; height: 7px; border-radius: 50%; box-shadow: 0 0 0 2px var(--vd-panel), 0 0 0 3px var(--vd-line-strong); }
 .vd-wl-legend li b { font-weight: 500; color: var(--vd-ink-1); font-variant-numeric: tabular-nums; }
 .vd-wl-legend li span { font-variant-numeric: tabular-nums; }
-.vd-wl-legend-hint { flex: none; margin: 0; padding-left: 12px; border-left: 1px solid var(--vd-line); font-size: var(--vd-fs-11); color: var(--vd-ink-3); }
-@media (max-width: 1439px) { .vd-wl-legend-hint { display: none; } }
 
 /* ───────── 右窄栏 ───────── */
 
@@ -230,18 +206,9 @@
   animation: vd-wl-rise .8s var(--vd-spring) .16s both;
 }
 :root[data-variant="d"][data-theme="dark"] .vd-wl-metrics { background: color-mix(in srgb, var(--vd-panel) 80%, transparent); }
-/* 仪器描角：和看板地球取景窗同一套（12px、1.5px、圆角 4、墨色 3 级半透明），常显 */
-.vd-wl-hud { position: absolute; inset: 7px; pointer-events: none; }
-.vd-wl-hud i { position: absolute; width: 12px; height: 12px; border: 0 solid color-mix(in srgb, var(--vd-ink-3) 50%, transparent); }
-.vd-wl-hud i:nth-child(1) { top: 0; left: 0; border-top-width: 1.5px; border-left-width: 1.5px; border-top-left-radius: 4px; }
-.vd-wl-hud i:nth-child(2) { top: 0; right: 0; border-top-width: 1.5px; border-right-width: 1.5px; border-top-right-radius: 4px; }
-.vd-wl-hud i:nth-child(3) { bottom: 0; left: 0; border-bottom-width: 1.5px; border-left-width: 1.5px; border-bottom-left-radius: 4px; }
-.vd-wl-hud i:nth-child(4) { bottom: 0; right: 0; border-bottom-width: 1.5px; border-right-width: 1.5px; border-bottom-right-radius: 4px; }
 
 .vd-wl-metric { position: relative; display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 16px 20px 14px 22px; }
 .vd-wl-metric + .vd-wl-metric::before { content: ""; position: absolute; left: 0; top: 18px; bottom: 18px; width: 1px; background: var(--vd-line); }
-.vd-wl-metric-n { position: absolute; top: 17px; right: 18px; font-family: var(--vd-font-mono); font-size: var(--vd-fs-11); letter-spacing: .06em; color: var(--vd-ink-3); opacity: .8; }
-.vd-wl-metric .vd-big-label { padding-right: 24px; }
 .vd-wl-metric:first-of-type .vd-big-label::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 7px 1px 0; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px rgb(var(--accent-rgb) / .14); vertical-align: middle; }
 .vd-wl-metric-foot { display: flex; align-items: center; gap: 10px; min-width: 0; margin: 0; height: 18px; font-size: var(--vd-fs-12); line-height: 1; color: var(--vd-ink-3); white-space: nowrap; }
 .vd-wl-metric-viz { display: inline-flex; align-items: center; flex: none; width: 64px; }
@@ -271,21 +238,16 @@
 }
 /* 矮屏（1280×720 一类）：问候区收紧 */
 @media (min-width: 1024px) and (max-height: 760px) {
-  .vd-wl-kicker { margin-bottom: 12px; }
   .vd-wl-sub { margin-top: 6px; }
   .vd-wl-ask { margin-top: 16px; }
-  .vd-wl-quick { margin-top: 12px; }
-  .vd-wl .vd-ask-note { margin-top: 8px; }
   .vd-wl .vd-suggest { margin-top: 10px; }
   .vd-wl-metric { padding-top: 13px; padding-bottom: 12px; gap: 8px; }
-  .vd-wl-metric-n { top: 14px; }
   .vd-wl-row { height: 40px; }
   .vd-wl-list { padding: 4px 6px; }
   .vd-wl-tip-list { padding: 4px 6px; }
   .vd-wl-tip { padding: 7px 8px 8px 6px; }
   .vd-wl-tip-body { gap: 6px; }
   .vd-wl-tip-meta { display: none; }
-  .vd-wl-legend-hint { display: none; }
 }
 /* 宽 1024–1279：指标数字降一档 */
 @media (min-width: 1024px) and (max-width: 1279px) {
@@ -311,7 +273,6 @@
   .vd-wl-main { display: block; pointer-events: auto; }
   .vd-wl-hero { width: 100%; }
   .vd-wl-title { font-size: var(--vd-fs-28); }
-  .vd-wl-quick { flex-wrap: wrap; justify-content: center; }
   .vd-wl-legend { position: static; flex-wrap: wrap; justify-content: center; height: auto; margin-top: 20px; padding: 8px 12px; border-radius: 12px; white-space: normal; }
   .vd-wl-legend ul { flex-wrap: wrap; justify-content: center; gap: 4px 12px; padding: 0; border: 0; }
   .vd-wl-globe { position: relative; order: 2; left: auto; width: auto; height: 240px; margin: -24px calc(-1 * var(--vd-gutter)) -88px; }
@@ -323,7 +284,5 @@
   .vd-wl-tips { flex: none; }
 }
 @media (max-width: 520px) {
-  .vd-wl-quick { display: grid; width: 100%; }
-  .vd-wl-quick-item + .vd-wl-quick-item::before { left: 10px; right: 10px; top: -1px; bottom: auto; width: auto; height: 1px; }
   .vd-wl-legend ul { gap: 4px 10px; }
 }

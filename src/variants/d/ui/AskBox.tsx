@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { useSite } from '../../../core/provider';
 import { Chip } from './Chip';
 import { IconArrowUp, IconClose, IconSparkle } from './icons';
@@ -10,13 +10,15 @@ import { useOnScreen, useTypewriter } from './lib';
  * - 只负责输入：提交时调用 onSubmit(q)，回答由页面自己处理；
  * - 空着按回车：提交占位里正在打的那句；Tab：把那句填进输入框；
  * - size：hero（欢迎页大号）/ dock（问答页底部）；
- * - 下方一排建议问题（hero 5 条、dock 4 条），点击直接提交。
+ * - 下方一排建议问题（hero 3 条、dock 4 条），点击直接提交；extra 接在这一排最后（欢迎页放「用问答生成看板」）；
+ * - hero 不显示 Tab 键提示和下方的说明行（欢迎页副标题里已经写了），说明只留给读屏。
  */
-export function AskBox({ onSubmit, suggestions, size, autoFocus }: {
+export function AskBox({ onSubmit, suggestions, size, autoFocus, extra }: {
   onSubmit: (q: string) => void;
   suggestions: string[];
   size: 'hero' | 'dock';
   autoFocus?: boolean;
+  extra?: ReactNode;
 }) {
   const { fx } = useSite();
   const id = useId();
@@ -83,19 +85,18 @@ export function AskBox({ onSubmit, suggestions, size, autoFocus }: {
             </span>
           )}
         </div>
-        {value
-          ? <button type="button" className="vd-askbox-clear" onClick={() => { setValue(''); input.current?.focus(); }} aria-label="清空输入"><IconClose /></button>
-          : hero && <span className="vd-askbox-keys" aria-hidden="true"><kbd>Tab</kbd>填入</span>}
+        {value && <button type="button" className="vd-askbox-clear" onClick={() => { setValue(''); input.current?.focus(); }} aria-label="清空输入"><IconClose /></button>}
         <button type="submit" className="vd-askbox-go" aria-label="提问"><IconArrowUp size={hero ? 20 : 16} /></button>
       </form>
-      <p id={hintId} className="vd-ask-note">
-        <IconSparkle />按关键词匹配演示数据，不是 AI 生成。{hero ? '空着按回车，会问占位里的这句。' : ''}
+      <p id={hintId} className={hero ? 'vd-sr' : 'vd-ask-note'}>
+        <IconSparkle />按关键词匹配演示数据，不是 AI 生成。{hero ? '空着按回车，会问占位里的这句；按 Tab 把这句填进输入框。' : ''}
       </p>
-      {suggestions.length > 0 && (
+      {(suggestions.length > 0 || extra) && (
         <ul className="vd-suggest" aria-label="建议问题">
-          {suggestions.slice(0, hero ? 5 : 4).map(q => (
+          {suggestions.slice(0, hero ? 3 : 4).map(q => (
             <li key={q}><Chip onClick={() => submit(q)}>{q}</Chip></li>
           ))}
+          {extra && <li>{extra}</li>}
         </ul>
       )}
     </div>
