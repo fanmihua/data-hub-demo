@@ -17,7 +17,7 @@ export type EditAction =
 const COMPATIBLE: Record<WidgetKind, ChartType[]> = {
   timeseries: ['line', 'area', 'bar', 'table'],
   stream: ['line', 'area', 'bar'],
-  bars: ['bar', 'table'],
+  bars: ['bar', 'treemap', 'stream', 'heatmap', 'sunburst', 'bubble', 'radial', 'table'],
   contracts: ['bar', 'table'],
   kpi: [],
   globe: [],

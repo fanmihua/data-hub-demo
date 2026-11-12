@@ -6,14 +6,14 @@ import { METRICS, metricSeries, metricValue } from '../../model/metrics';
 import type { ChartType, MetricKey, WidgetConfig } from '../../model/types';
 import { BigNumber } from '../../ui/BigNumber';
 import { Panel } from '../../ui/Panel';
-import { Bars, Globe, Ring, Sankey, TimeSeries, Tip, TipHead, TipRow, modelColorVar, useModelColor, type BarItem, type Note, type Satellite, type Series } from '../../viz';
+import { Bars, Breakdown, Globe, Sankey, SegBar, TimeSeries, Tip, TipHead, TipRow, modelColorVar, useModelColor, type BarItem, type BreakRow, type BreakType, type Note, type Satellite, type Series } from '../../viz';
 import { EASE, useBox, useEntrance } from '../../viz/util';
 import { IconInbox } from '../../ui/icons';
 import { IconTableView, IconLine } from './icons';
 import { MiniTrend } from './MiniTrend';
 import { StatusLegend, Timeline } from './Timeline';
 import {
-  BY_MODEL, COLOR_VAR, KIND_CODE, NO_MONTHLY, kpiContext, numFmt, partialMonth, spendMonths, streamFacts, type BoardFilter,
+  BREAK_TYPES, BY_MODEL, COLOR_VAR, KIND_CODE, NO_MONTHLY, TYPE_LABEL, kpiContext, numFmt, partialMonth, spendMonths, streamFacts, type BoardFilter,
 } from './lib';
 
 /**
@@ -202,7 +202,7 @@ function SeriesWidget({ w, d }: { w: WidgetConfig; d: Derived }) {
   return (
     <Panel className="vd-bd-w vd-bd-series" kicker={KIND_CODE.timeseries} title={w.title} actions={actions} spot>
       {model
-        ? <TimeSeries labels={model.labels} series={model.series} type={type} notes={model.notes} height="100%" unit={pctUnit ? undefined : '万元'}
+        ? <TimeSeries labels={model.labels} series={model.series} type={type as 'line' | 'area' | 'bar' | 'table'} notes={model.notes} height="100%" unit={pctUnit ? undefined : '万元'}
             ariaLabel={`${w.title}：${model.series.map(s => `${s.label} ${model.labels.map((l, i) => `${l} ${valueFormat(s.values[i] ?? 0)}`).join('、')}`).join('；')}`}
             valueFormat={valueFormat} />
         : <Empty text={`${METRICS[key].label}只有全年数，没有月度明细。可以在配置里换成「确认收入」或「报账金额」。`} />}
@@ -227,17 +227,38 @@ function barItems(d: Derived, key: MetricKey, color: string, colorOfModel: (id: 
   });
 }
 
+const isBreak = (t: ChartType): t is BreakType => BREAK_TYPES.includes(t);
+
 function BarsWidget({ w, d }: { w: WidgetConfig; d: Derived }) {
   const key = w.metric ?? 'billed';
   const colorOfModel = useModelColor();
   const items = barItems(d, key, colorOf(w), colorOfModel);
   const head = BY_MODEL.includes(key) ? '型号' : '分系统';
+  const box = useRef<HTMLDivElement>(null);
+  const { width } = useBox(box);
+  // 表头上的快捷开关：只在这次浏览里换图形看一眼，不改看板配置（配置在编辑状态的抽屉里改）
+  const [peek, setPeek] = useState<ChartType | null>(null);
+  useEffect(() => { setPeek(null); }, [w.chartType]);
+  const type: ChartType = peek ?? w.chartType ?? 'bar';
+  const rows = useMemo<BreakRow[]>(() => d.bills.map(b => ({ id: b.id, month: b.month, model: b.model, system: b.system, component: b.component, amount: b.amount, paid: b.paid })), [d.bills]);
+  const aria = `${w.title}：${items.map(i => `${i.label} ${i.display}`).join('，')}`;
+  const quick = width >= 560 && w.chartType !== 'table' ? (
+    <div className="vd-bd-types" role="radiogroup" aria-label="图表类型">
+      {(['bar', ...BREAK_TYPES] as ChartType[]).map(t => (
+        <button key={t} type="button" role="radio" aria-checked={type === t} className={type === t ? 'is-on' : ''} onClick={() => setPeek(t)}>{TYPE_LABEL[t]}</button>
+      ))}
+    </div>
+  ) : undefined;
   return (
-    <Panel className="vd-bd-w vd-bd-bars" kicker={KIND_CODE.bars} title={w.title} spot>
-      {w.chartType === 'table'
-        ? <MiniTable head={[head, METRICS[key].label]} rows={items.map(i => [i.label, i.display])} caption={w.title} />
-        : <Bars items={items} ariaLabel={`${w.title}：${items.map(i => `${i.label} ${i.display}`).join('，')}`} />}
-    </Panel>
+    <div ref={box} className="vd-bd-bars-wrap">
+      <Panel className={`vd-bd-w vd-bd-bars is-${type}`} kicker={isBreak(type) ? type.toUpperCase() : KIND_CODE.bars} title={w.title} actions={quick} spot>
+        {type === 'table'
+          ? <MiniTable head={[head, METRICS[key].label]} rows={items.map(i => [i.label, i.display])} caption={w.title} />
+          : isBreak(type)
+            ? <Breakdown type={type} rows={rows} colorOfModel={colorOfModel} ariaLabel={aria} />
+            : <Bars items={items} ariaLabel={aria} />}
+      </Panel>
+    </div>
   );
 }
 
@@ -356,19 +377,17 @@ function RingWidget({ w, d }: { w: WidgetConfig; d: Derived }) {
   // 按整个格位的高度决定紧凑与否（不能按图表区量：切换后表头出现、图表区变矮，会来回跳）
   return (
     <div ref={box} className="vd-bd-ring-wrap">
-      <Panel className={`vd-bd-w vd-bd-ring${compact ? ' is-compact' : ''}`} kicker={compact ? undefined : KIND_CODE.ring} title={compact ? undefined : w.title} spot>
+      <Panel className={`vd-bd-w vd-bd-ring${compact ? ' is-compact' : ''}`} kicker={compact ? undefined : 'SHARE'} title={compact ? undefined : w.title} spot>
         <div className="vd-bd-ring-box">
-          {compact
-            ? <MiniDonut items={items} ratioMetric={ratioMetric} title={w.title} total={f.text(total)} label={label} />
-            : <Ring items={items} ariaLabel={label}
-                center={<span className="vd-bd-ring-c"><b>{ratioMetric ? pct(total) : wan(total)}</b><small>{ratioMetric ? '合计' : '万元'}</small></span>} />}
+          <SegBar compact={compact} title={compact ? w.title : undefined} ariaLabel={label}
+            total={ratioMetric ? pct(total) : wan(total)} note={ratioMetric ? '合计' : '万元'}
+            items={items.map(i => ({ key: i.key, label: i.label, color: i.color, ratio: i.ratio, display: ratioMetric ? pct(i.ratio) : f.text(i.value) }))} />
         </div>
       </Panel>
     </div>
   );
 }
 
-/** 紧凑版环：一个甜甜圈 + 一行图例（格位矮的时候用） */
 function MiniDonut({ items, ratioMetric, title, total, label }: { items: { key: string; label: string; color: string; ratio: number }[]; ratioMetric: boolean; title: string; total: string; label: string }) {
   const { fx } = useSite();
   const ref = useRef<SVGSVGElement>(null);

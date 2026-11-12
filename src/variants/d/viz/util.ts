@@ -82,7 +82,8 @@ export function useEntrance(ref: RefObject<Element | null>, play: (el: Element) 
  * - [data-draw]：描线（path 需 pathLength=1、stroke-dasharray=1）；
  * - [data-grow="x|y"]：生长（配合 CSS transform-box / transform-origin）；
  * - [data-sweep]：从左往右揭开（clip-path inset）；
- * - [data-fade]：淡入上移。
+ * - [data-fade]：淡入上移；
+ * - [data-pop]：从 72% 放大到位并淡入（块、格子、气泡；SVG 里配合 transform-box: fill-box）。
  * 可用 data-delay（毫秒）给单个元素加延迟。
  */
 export function playIn(root: Element, { duration = 900, delay = 0 }: { duration?: number; delay?: number } = {}) {
@@ -97,6 +98,9 @@ export function playIn(root: Element, { duration = 900, delay = 0 }: { duration?
   root.querySelectorAll('[data-grow]').forEach((el, i) => {
     const axis = el.getAttribute('data-grow') === 'x' ? 'scaleX' : 'scaleY';
     out.push(el.animate([{ transform: `${axis}(0)` }, { transform: `${axis}(1)` }], { duration: duration * 0.85, delay: delay + extra(el) + Math.min(i * 28, 360), easing: EASE, fill: 'backwards' }));
+  });
+  root.querySelectorAll('[data-pop]').forEach(el => {
+    out.push(el.animate([{ opacity: 0, transform: 'scale(.72)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 560, delay: delay + extra(el), easing: EASE, fill: 'backwards' }));
   });
   root.querySelectorAll('[data-fade]').forEach((el, i) => {
     out.push(el.animate([{ opacity: 0, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }], { duration: 480, delay: delay + extra(el) + duration * 0.45 + i * 40, easing: EASE, fill: 'backwards' }));

@@ -256,3 +256,59 @@
 .vd-ring-legend li b { font-weight: 500; color: var(--vd-ink-1, #0E1320); padding-left: 10px; }
 .vd-ring-legend li.is-on { background: color-mix(in srgb, var(--vd-ink-1, #0E1320) 4%, transparent); }
 .vd-ring-legend li.is-dim { opacity: .42; }
+
+/* ───────── 构成分析的六种图形（Breakdown）和分段条（SegBar） ───────── */
+.vd-bk { position: relative; width: 100%; height: 100%; min-height: 0; }
+.vd-bk-svg { display: block; overflow: visible; }
+.vd-bk-svg text { font-family: var(--vd-font-body, "DH PuHuiTi", "PingFang SC", sans-serif); font-variant-numeric: tabular-nums; }
+.vd-bk-empty { position: absolute; inset: 0; display: grid; place-items: center; font-size: var(--vd-fs-12, 12px); color: var(--vd-ink-3); }
+.vd-bk [data-pop], .vd-bk [data-fade] { transform-box: fill-box; transform-origin: 50% 50%; }
+.vd-bk-mark { cursor: default; transition: filter .2s var(--vd-ease, ease); }
+.vd-bk-mark:hover { filter: brightness(1.14); }
+.vd-bk-group { fill-opacity: .09; stroke-opacity: .34; stroke-width: 1; }
+.vd-bk-gname { font-size: 12.5px; font-weight: 700; fill: var(--vd-ink-1); }
+.vd-bk-gval { font-size: 11.5px; fill: var(--vd-ink-2); }
+.vd-bk-sname { font-size: 11px; fill: var(--vd-ink-3); }
+.vd-bk-lname { font-size: 12px; font-weight: 500; fill: rgba(255, 255, 255, .94); }
+.vd-bk-lval { font-family: var(--vd-font-display, "DH ShuHeiTi", sans-serif) !important; font-weight: 700; fill: #fff; }
+.vd-bk-unit { font-family: var(--vd-font-body, "DH PuHuiTi", sans-serif); font-size: 11px; font-weight: 400; fill: rgba(255, 255, 255, .82); }
+.vd-bk-track { fill: rgba(8, 10, 16, .32); }
+.vd-bk-paid { fill: rgba(255, 255, 255, .88); }
+.vd-bk-grid { stroke: var(--vd-line); stroke-width: 1; }
+.vd-bk-band { stroke: var(--vd-panel); stroke-width: 1.5; }
+.vd-bk-on.is-light .vd-bk-lname, .vd-bk-on.is-light .vd-bk-lval { fill: #0B0D12; }
+.vd-bk-axis { font-size: 11px; fill: var(--vd-ink-3); }
+.vd-bk-total { font-family: var(--vd-font-display, "DH ShuHeiTi", sans-serif) !important; font-size: 13px; font-weight: 700; fill: var(--vd-ink-1); }
+.vd-bk-row { font-size: 12px; font-weight: 500; fill: var(--vd-ink-1); }
+.vd-bk-rowsum { font-family: var(--vd-font-display, "DH ShuHeiTi", sans-serif) !important; font-size: 16px; font-weight: 700; fill: var(--vd-ink-1); }
+.vd-bk-cell { fill: var(--accent); }
+.vd-bk-cell.is-zero { fill: var(--vd-panel-2); stroke: var(--vd-line); }
+.vd-bk-lval.is-hot { fill: var(--vd-bg); }
+.vd-bk-lval.is-cool { fill: var(--vd-ink-1); }
+.vd-bk-center { font-family: var(--vd-font-display, "DH ShuHeiTi", sans-serif) !important; font-weight: 700; fill: var(--vd-ink-1); }
+.vd-bk-rim { fill: none; stroke-opacity: .7; stroke-width: 1; }
+.vd-bk-rtrack { fill: none; stroke: var(--vd-panel-3); stroke-linecap: round; }
+.vd-bk-rbar { fill: none; stroke-linecap: round; stroke-dasharray: 1; }
+.vd-bk-rlabel { font-size: 11.5px; fill: var(--vd-ink-2); }
+.vd-bk-rnum { font-family: var(--vd-font-display, "DH ShuHeiTi", sans-serif); font-size: 12.5px; font-weight: 700; fill: var(--vd-ink-1); }
+
+.vd-share { display: flex; flex-direction: column; justify-content: center; gap: 10px; width: 100%; height: 100%; min-width: 0; min-height: 0; }
+.vd-share-head { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.vd-share-head b { font-family: var(--vd-font-display, "DH ShuHeiTi", sans-serif); font-weight: 700; font-size: 34px; line-height: 1; color: var(--vd-ink-1); }
+.vd-share-head small { font-size: var(--vd-fs-12, 12px); color: var(--vd-ink-3); }
+.vd-share-title { margin-right: auto; font-size: var(--vd-fs-12, 12px); color: var(--vd-ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vd-share-bar { display: flex; gap: 3px; height: 56px; min-height: 22px; flex: 0 1 56px; }
+.vd-share-part { position: relative; display: flex; flex-direction: column; justify-content: center; flex-basis: 0; min-width: 6px; padding: 0 12px; border-radius: 9px; overflow: hidden; transform-origin: 0 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, 0) 60%), var(--c); color: #fff; }
+.vd-share-part b { font-family: var(--vd-font-display, "DH ShuHeiTi", sans-serif); font-weight: 700; font-size: 18px; line-height: 1.1; white-space: nowrap; }
+.vd-share-part em { font-style: normal; font-size: 11.5px; opacity: .86; white-space: nowrap; }
+.vd-share-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: var(--vd-fs-11, 11px); color: var(--vd-ink-2); }
+.vd-share-legend span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.vd-share-legend i { width: 6px; height: 6px; border-radius: 50%; }
+.vd-share-legend b { font-weight: 700; color: var(--vd-ink-1); }
+.vd-share.is-compact { gap: 7px; }
+.vd-share.is-compact .vd-share-head b { font-size: 20px; }
+.vd-share.is-compact .vd-share-bar { height: 26px; flex-basis: 26px; }
+.vd-share.is-compact .vd-share-part { padding: 0 8px; border-radius: 6px; }
+.vd-share.is-compact .vd-share-part b { font-size: 12px; }
+

@@ -546,3 +546,13 @@
   .vd-seg.vd-bd-seg > button { padding: 0 8px; }
   .vd-bd-actions .vd-btn.is-ghost { display: none; }
 }
+
+/* 构成分析组件：表头右边的图表类型快捷开关（格位够宽才出现）；格位包一层用来量宽度 */
+.vd-bd-bars-wrap { display: flex; height: 100%; min-width: 0; min-height: 0; }
+.vd-bd-bars-wrap > .vd-panel { flex: 1 1 auto; }
+.vd-bd-types { display: inline-flex; gap: 2px; padding: 2px; border-radius: 9px; background: var(--vd-panel-2); border: 1px solid var(--vd-line); }
+.vd-bd-types button { height: 22px; padding: 0 9px; border: 0; border-radius: 6px; background: transparent; font: inherit; font-size: var(--vd-fs-11); color: var(--vd-ink-3); cursor: pointer; white-space: nowrap; transition: color .2s var(--vd-ease), background .2s var(--vd-ease); }
+.vd-bd-types button:hover { color: var(--vd-ink-1); }
+.vd-bd-types button.is-on { color: var(--vd-accent-ink); font-weight: 500; background: rgb(var(--accent-rgb) / .16); }
+.vd-bd-bars:not(.is-bar):not(.is-table) .vd-panel-body { padding-top: 8px; overflow: hidden; }
+

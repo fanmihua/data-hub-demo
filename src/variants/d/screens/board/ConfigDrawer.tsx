@@ -4,10 +4,10 @@ import { METRICS, METRIC_KEYS } from '../../model/metrics';
 import type { BoardLayout, ChartType, MetricKey, WidgetColor, WidgetConfig, WidgetKind } from '../../model/types';
 import { IconClose, IconLayers, IconTrash } from '../../ui/icons';
 import { Glyph } from './glyphs';
-import { IconArea, IconColumn, IconLine, IconSlot, IconTableView } from './icons';
+import { IconArea, IconColumn, IconLine, IconSlot, IconTableView, IconBubble, IconHeatmap, IconRadial, IconStream, IconSunburst, IconTreemap } from './icons';
 import { BY_MODEL, COLOR_LABEL, COLOR_VAR, KIND_CODE, KIND_LABEL, NO_MONTHLY, TYPE_LABEL, USES_COLOR, USES_METRIC, dimensionOf } from './lib';
 
-const TYPE_ICON: Record<ChartType, typeof IconLine> = { line: IconLine, area: IconArea, bar: IconColumn, table: IconTableView };
+const TYPE_ICON: Record<ChartType, typeof IconLine> = { line: IconLine, area: IconArea, bar: IconColumn, table: IconTableView, treemap: IconTreemap, stream: IconStream, heatmap: IconHeatmap, sunburst: IconSunburst, bubble: IconBubble, radial: IconRadial };
 const COLORS: WidgetColor[] = ['accent', 'm1', 'm2', 'm3', 'signal'];
 
 /** 换指标时自动跟着换的标题（标题没被手动改过时才换） */

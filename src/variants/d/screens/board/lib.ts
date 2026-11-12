@@ -30,7 +30,9 @@ export const KIND_CODE: Record<WidgetKind, string> = {
   kpi: 'KPI', stream: 'STREAM', globe: 'ORBIT', timeseries: 'SERIES', bars: 'BARS',
   sankey: 'FLOW', contracts: 'CONTRACTS', timeline: 'TIMELINE', ring: 'RING',
 };
-export const TYPE_LABEL: Record<ChartType, string> = { line: '折线', area: '面积', bar: '柱状', table: '表格' };
+export const TYPE_LABEL: Record<ChartType, string> = { line: '折线', area: '面积', bar: '柱状', table: '表格', treemap: '树图', stream: '流图', heatmap: '热力', sunburst: '旭日', bubble: '气泡', radial: '径向' };
+/** 构成分析的六种图形（只有按报账单拆的 bars 组件能用） */
+export const BREAK_TYPES: ChartType[] = ['treemap', 'stream', 'heatmap', 'sunburst', 'bubble', 'radial'];
 
 /** 这些组件读 metric；其余组件的数据由类型决定 */
 export const USES_METRIC: Record<WidgetKind, boolean> = {

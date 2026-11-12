@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 import {
-  ArrowLeftRight, CalendarRange, ChartArea, ChartColumn, ChartLine, ChevronDown, CircleDashed, Hourglass, Keyboard,
-  MoveDiagonal2, SquareDashed, Table2, type LucideProps,
+  ArrowLeftRight, CalendarRange, ChartArea, ChartColumn, ChartLine, ChartScatter, ChevronDown, CircleDashed, Grid3x3, Hourglass, Keyboard,
+  LayoutDashboard, MoveDiagonal2, SquareDashed, Sun, Table2, Target, Waves, type LucideProps,
 } from 'lucide-react';
 import type { IconProps } from '../../ui/icons';
 
@@ -29,3 +29,9 @@ export const IconSwap = make(ArrowLeftRight, 'IconSwap');
 export const IconSlot = make(SquareDashed, 'IconSlot');
 export const IconKeyboard = make(Keyboard, 'IconKeyboard');
 export const IconPartial = make(CircleDashed, 'IconPartial');
+export const IconTreemap = make(LayoutDashboard, 'IconTreemap');
+export const IconStream = make(Waves, 'IconStream');
+export const IconHeatmap = make(Grid3x3, 'IconHeatmap');
+export const IconSunburst = make(Sun, 'IconSunburst');
+export const IconBubble = make(ChartScatter, 'IconBubble');
+export const IconRadial = make(Target, 'IconRadial');

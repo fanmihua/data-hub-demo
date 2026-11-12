@@ -11,11 +11,12 @@ import type { BoardId, BoardLayout } from './types.ts';
  * - stream      metric 的当前值 + 近 6 个月迷你曲线（metricSeries）+ 较上月变化；chartType 为曲线样式
  * - kpi         metric 的当前值，大数字
  * - timeseries  metric 的月度序列；revenue 按型号分系列，其余为单系列；chartType 切换折线 / 面积 / 柱状 / 表格
- * - bars        metric 分组：revenue / received / completion / receivedRate 按型号，其余按分系统
+ * - bars        metric 分组：revenue / received / completion / receivedRate 按型号，其余按分系统；
+ *               chartType 还可以是构成分析的六种图形（treemap / stream / heatmap / sunburst / bubble / radial），按报账单拆
  * - sankey      资金流向：型号 → 分系统 → 付款状态（d.flow）
  * - contracts   合同履约条形图（d.contracts）
  * - timeline    报账时间线，点一张报账单展开付款链路
- * - ring        型号构成环形图：metric 按型号的占比
+ * - ring        型号构成：metric 按型号的占比，画成分段条（原来是环形图）
  * - color       组件强调色：accent / m1–m3（型号色）/ signal（尾焰橙，慎用）。
  *               默认配置里非型号指标一律用 accent，型号色只留给按型号拆分的图（避免把「报账」读成 HX-02）
  *
@@ -42,7 +43,7 @@ export const BOARD_LAYOUTS: Record<BoardId, BoardLayout> = {
     slots: {
       k1: { id: 'op-received', kind: 'kpi', title: '已回款', metric: 'received', color: 'accent' },
       main: { id: 'op-revenue-trend', kind: 'timeseries', title: '月度收入 · 按型号', metric: 'revenue', chartType: 'area', color: 'accent' },
-      side: { id: 'op-flow', kind: 'sankey', title: '资金流向：型号 → 分系统 → 付款' },
+      side: { id: 'op-tree', kind: 'bars', title: '报账构成', metric: 'billed', chartType: 'treemap', color: 'accent' },
       s1: { id: 'op-s-revenue', kind: 'stream', title: '月度收入', metric: 'revenue', chartType: 'area', color: 'accent' },
       k2: { id: 'op-received-rate', kind: 'kpi', title: '回款率', metric: 'receivedRate', color: 'accent' },
       s2: { id: 'op-s-completion', kind: 'stream', title: '累计完成率', metric: 'completion', chartType: 'line', color: 'accent' },
@@ -93,14 +94,14 @@ export const BOARD_LAYOUTS: Record<BoardId, BoardLayout> = {
     ],
     slots: {
       side: { id: 'ex-flow', kind: 'sankey', title: '支出构成：型号 → 分系统 → 付款' },
-      main: { id: 'ex-billed-trend', kind: 'timeseries', title: '月度报账', metric: 'billed', chartType: 'bar', color: 'accent' },
+      main: { id: 'ex-heat', kind: 'bars', title: '分系统 × 月份', metric: 'billed', chartType: 'heatmap', color: 'accent' },
       k1: { id: 'ex-billed', kind: 'kpi', title: '累计报账', metric: 'billed', color: 'accent' },
       k2: { id: 'ex-ring', kind: 'ring', title: '报账构成 · 按型号', metric: 'billed' },
       s1: { id: 'ex-s-billed', kind: 'stream', title: '报账', metric: 'billed', chartType: 'bar', color: 'accent' },
       s2: { id: 'ex-s-paid', kind: 'stream', title: '付款', metric: 'paid', chartType: 'bar', color: 'accent' },
       s3: { id: 'ex-s-unpaid', kind: 'stream', title: '待付款', metric: 'unpaid', chartType: 'bar', color: 'accent' },
       s4: { id: 'ex-s-revenue', kind: 'stream', title: '月度收入', metric: 'revenue', chartType: 'area', color: 'accent' },
-      globe: { id: 'ex-globe', kind: 'globe', title: '型号轨道' },
+      globe: { id: 'ex-stream', kind: 'bars', title: '分系统报账', metric: 'billed', chartType: 'stream', color: 'accent' },
       tl: { id: 'ex-timeline', kind: 'timeline', title: '报账时间线' },
     },
   },

@@ -5,7 +5,7 @@
 
 export type BoardId = 'contracts' | 'expenses' | 'operations';
 export type MetricKey = 'revenue' | 'received' | 'billed' | 'paid' | 'unpaid' | 'completion' | 'receivedRate' | 'payRate';
-export type ChartType = 'line' | 'area' | 'bar' | 'table';
+export type ChartType = 'line' | 'area' | 'bar' | 'table' | 'treemap' | 'stream' | 'heatmap' | 'sunburst' | 'bubble' | 'radial';
 export type WidgetKind = 'kpi' | 'stream' | 'globe' | 'timeseries' | 'bars' | 'sankey' | 'contracts' | 'timeline' | 'ring';
 export type WidgetColor = 'accent' | 'm1' | 'm2' | 'm3' | 'signal';
 
